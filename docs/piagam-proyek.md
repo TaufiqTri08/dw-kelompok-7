@@ -68,11 +68,11 @@ Semua anggota ikut di setiap tahap. Peran berarti penanggung jawab. Karena tim b
 | Komponen | Pilihan |
 |----------|---------|
 | Sumber | MySQL/MariaDB di XAMPP, database `adventureworks2` (hanya dibaca): AdventureWorks2017 dari Microsoft, dari dump dosen yang di-import apa adanya. Rincian di `docs/sumber-data.md` |
-| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_x` |
+| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_7` |
 | ETL | Pentaho Data Integration CE (versi sama untuk semua anggota) |
 | OLAP | Mondrian |
 | Dashboard | Web dengan chart library (usulan: Chart.js) |
-| Repositori | Git, satu repositori tim `dw-kelompok-X` |
+| Repositori | Git, satu repositori tim `dw-kelompok-7` |
 
 
 
