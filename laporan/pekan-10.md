@@ -47,13 +47,13 @@ Angka kunci dari profil data:
 ## 5. Rencana pekan depan
 | Target | Penanggung jawab |
 |--------|------------------|
-| Source-to-target mapping untuk setiap kolom dimensi dan fakta | [Nama anggota 3] ETL Developer |
-| Strategi SCD tiap dimensi beserta alasannya (usulan tipe 2 untuk `dim_sales_person`) | [Nama anggota 2] Data Modeler |
-| Urutan load: staging, dimensi, lalu fakta | [Nama anggota 3] ETL Developer |
-| Desain cube: dimensi, hierarki, dan measure, termasuk calculated member margin | [Nama anggota 4] OLAP dan Dashboard Developer |
-| Wireframe dashboard untuk ketujuh pertanyaan bisnis | [Nama anggota 4] bersama [Nama anggota 1] |
-| Star schema versi 2 setelah kesepakatan conformed dimension | [Nama anggota 2] Data Modeler |
-| Pentaho bisa dibuka dan terhubung ke MySQL XAMPP (driver JDBC MariaDB/MySQL, zona waktu sesi +05:30) di semua laptop | Semua anggota, dikoordinasi [Nama anggota 1] |
+| Source-to-target mapping untuk setiap kolom dimensi dan fakta | Riki Audy Bin G ETL Developer |
+| Strategi SCD tiap dimensi beserta alasannya (usulan tipe 2 untuk `dim_sales_person`) | Taufiq Tri W Data Modeler |
+| Urutan load: staging, dimensi, lalu fakta | Riki Audy Bin G ETL Developer |
+| Desain cube: dimensi, hierarki, dan measure, termasuk calculated member margin | Chandra Febryan Saputra OLAP dan Dashboard Developer |
+| Wireframe dashboard untuk ketujuh pertanyaan bisnis | Chandra Febryan Saputra bersama Anggoro Adit H |
+| Star schema versi 2 setelah kesepakatan conformed dimension | Taufiq Tri W Data Modeler |
+| Pentaho bisa dibuka dan terhubung ke MySQL XAMPP (driver JDBC MariaDB/MySQL, zona waktu sesi +05:30) di semua laptop | Semua anggota, dikoordinasi Anggoro Adit H |
 
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
