@@ -58,7 +58,7 @@ Angka kunci dari profil data:
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
-| Anggoro Adit H | Project Manager | piagam proyek, risiko, laporan pekan 10 | [hash commit] |
+| Anggoro Adit H | Project Manager | piagam proyek, laporan pekan 10 | [hash commit] |
 | Taufiq Tri W | Data Modeler | [contoh: pertanyaan bisnis, grain, star schema v1, bus matrix] | [hash commit] |
 | Riki Audy Bin G | ETL Developer | [contoh: setup database, query profil data] | [hash commit] |
 | Chandra Febryan Saputra | OLAP dan Dashboard Developer | [contoh: query uji pertanyaan bisnis, kamus data awal] | [hash commit] |
