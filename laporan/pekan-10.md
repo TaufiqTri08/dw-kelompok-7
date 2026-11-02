@@ -36,7 +36,7 @@ Angka kunci dari profil data:
 
 
 ## 4. Keputusan yang butuh persetujuan sponsor
-1. **Database MySQL XAMPP, bukan PostgreSQL.** Tim memakai MySQL/MariaDB XAMPP untuk sumber maupun data warehouse, dengan dump `adventureworks2` dari dosen yang di-import apa adanya (data 2011–2014). Alasannya: satu jenis database untuk seluruh proyek, dan data sama persis dengan file dosen. Mohon persetujuan. Kalau sponsor meminta PostgreSQL, data bisa dipindahkan karena isinya sama.
+1. **Database MySQL XAMPP.** Tim memakai MySQL/MariaDB XAMPP untuk sumber maupun data warehouse, dengan dump `adventureworks2` dari dosen yang di-import apa adanya (data 2011–2014). Alasannya: satu jenis database untuk seluruh proyek, dan data sama persis dengan file dosen. Mohon persetujuan. 
 2. **Grain dan dimensi.** Grain satu baris per baris pesanan reseller, dengan 8 dimensi: Tanggal (3 peran), Produk, Reseller, Sales Person, Wilayah, Promosi, Mata Uang, Metode Kirim.
 3. **Ongkos kirim dan pajak di luar lingkup v1.** Keduanya dicatat per pesanan. Jika dibutuhkan, kami usulkan alokasi proporsional ke baris berdasarkan nilai penjualan.
 4. **Biaya produk historis.** `total_biaya_produk` memakai `production_productcosthistory` sesuai tanggal pesan, bukan biaya terbaru, karena 14.387 baris punya biaya yang berbeda.
