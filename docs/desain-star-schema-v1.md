@@ -17,9 +17,9 @@ Di sumber, pesanan ini ditandai `sales_salesorderheader.OnlineOrderFlag = 0`.
 
 Alasan memilih grain ini:
 
-- Ini level paling atomik. Agregat per bulan, per sales person, atau per toko bisa dibuat dari sini, tapi tidak sebaliknya.
+- 
 - Grain per pesanan akan menghilangkan analisis per produk dan promosi (promosi dicatat per baris).
-- Grain per sales person per bulan adalah agregat, sehingga produk dan reseller hilang.
+
 
 Calon jumlah baris fakta: **60.919** (hasil `sql/profil-data-sumber.sql` bagian 3).
 
