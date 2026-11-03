@@ -15,7 +15,6 @@ Status        : Hijau
 | Star schema versi 1 | Selesai | `docs/star-schema-v1.png`, `docs/star-schema-v1.dbml` |
 | Baris bus matrix tim | Selesai | `docs/bus-matrix.md` |
 | Profil data sumber: jumlah baris, rentang tanggal, jumlah NULL | Selesai | `sql/profil-data-sumber.sql`, hasil di `docs/profil-data.md` |
-| Minimal 3 risiko dan penanganannya | Selesai (10 risiko) | `docs/piagam-proyek.md` bagian 6 |
 
 Angka kunci dari profil data:
 
