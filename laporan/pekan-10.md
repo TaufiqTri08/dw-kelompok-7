@@ -7,7 +7,7 @@ Status        : Hijau
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
 |------------------|--------|-----------------------------------------------|
-| Repositori dibuat dengan struktur folder standar, dosen diundang | [Selesai / Belum] | [tautan repositori] |
+| Repositori dibuat dengan struktur folder standar, dosen diundang | [Selesai / Belum] |
 | Piagam proyek terisi lengkap, termasuk peran tiap anggota | Selesai | `docs/piagam-proyek.md` |
 | Database sumber Adventure Works siap di laptop tiap anggota (MySQL XAMPP, database `adventureworks2`, lihat keputusan nomor 1) | [Selesai / x dari 4 anggota] |
 | Minimal 5 pertanyaan bisnis beserta fakta dan dimensinya | Selesai (7 pertanyaan) | `docs/pertanyaan-bisnis.md`, diuji dengan `sql/uji-pertanyaan-bisnis.sql` |
