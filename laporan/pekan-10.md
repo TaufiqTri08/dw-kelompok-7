@@ -3,7 +3,6 @@ Kelompok      : 7
 Proses bisnis : Penjualan Reseller
 Status        : Hijau
 
-> Pilih **Hijau** hanya jika semua baris di tabel 1 sudah berstatus Selesai, termasuk repositori, undangan ke dosen, dan database di laptop tiap anggota. Hapus catatan ini sebelum dikirim.
 
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
