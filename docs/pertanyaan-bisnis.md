@@ -5,7 +5,7 @@ Proses bisnis : Penjualan Reseller
 Status        : Usulan untuk Steering Review pekan 10
 
 Urutan kerja yang kami pakai: **tanya**, lalu **pecah** menjadi fakta dan dimensi, lalu **lacak** ke tabel sumber.
-Setiap pertanyaan sudah diuji langsung ke database sumber dengan query di `sql/uji-pertanyaan-bisnis.sql` (kode P1 sampai P7).
+Setiap pertanyaan sudah diuji langsung ke database sumber dengan query di `sql/uji-pertanyaan-bisnis.sql`.
 
 ## Daftar pertanyaan
 
