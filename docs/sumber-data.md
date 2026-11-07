@@ -73,13 +73,3 @@ Ada dua hal yang perlu diperhatikan.
 | Contoh satu baris: `SalesOrderID = 43659` | `SO43659`, `PO522145787`, SubTotal 20565.6206 |
 
 Semua hasil query acuan ada di `docs/hasil-query/`.
-
-## 5. Alternatif yang tidak dipakai
-
-- **PostgreSQL dengan port AdventureWorks-for-Postgres** (https://github.com/lorint/AdventureWorks-for-Postgres), yang disebut di halaman tugas. Port ini memakai install script terbaru Microsoft, yang tanggalnya bergeser ke 2022–2025, sehingga angka per tahun dan per kuartal berbeda dengan data dosen.
-- **Mengonversi dump dosen ke PostgreSQL.** Cara ini sempat dicoba dan hasilnya sama, tetapi tim memutuskan memakai MySQL XAMPP untuk seluruh proyek supaya satu jenis database saja. Keputusan ini diajukan ke sponsor di laporan pekan 10.
-
-## 6. Aturan pemakaian
-
-- Database `adventureworks2` hanya dibaca. Tidak ada INSERT, UPDATE, atau DELETE.
-- Semua anggota meng-import file dump yang sama. Bagian 1 `sql/profil-data-sumber.sql` harus menghasilkan 3.806 pesanan reseller dan tanggal awal 2011-05-31.

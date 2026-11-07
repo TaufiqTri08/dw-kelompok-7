@@ -3,20 +3,25 @@ Kelompok      : 7
 Proses bisnis : Penjualan Reseller
 Status        : [Hijau / Kuning / Merah]
 
-> Pilih **Hijau** hanya jika semua baris di tabel 1 sudah berstatus Selesai, termasuk repositori, undangan ke dosen, dan database di laptop tiap anggota. Hapus catatan ini sebelum dikirim.
 
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
 |------------------|--------|-----------------------------------------------|
+<<<<<<< HEAD
 | Repositori dibuat dengan struktur folder standar, dosen diundang | [Selesai / Belum] | [https://github.com/TaufiqTri08/dw-kelompok-7.git] |
 | Piagam proyek terisi lengkap, termasuk peran tiap anggota | Selesai | `docs/piagam-proyek.md` |
 | Database sumber Adventure Works siap di laptop tiap anggota (MySQL XAMPP, database `adventureworks2`, lihat keputusan nomor 1) | [Selesai / x dari 5 anggota] | `docs/bukti/kesiapan-<nama>.png` (hasil `sql/cek-kesiapan.sql` dari tiap laptop) |
 | Minimal 5 pertanyaan bisnis beserta fakta dan dimensinya | Selesai (5 pertanyaan) | `docs/pertanyaan-bisnis.md`, diuji dengan `sql/uji-pertanyaan-bisnis.sql` |
+=======
+| Repositori dibuat dengan struktur folder standar, dosen diundang | [Selesai / Belum] |
+| Piagam proyek terisi lengkap, termasuk peran tiap anggota | Selesai | `docs/piagam-proyek.md` |
+| Database sumber Adventure Works siap di laptop tiap anggota (MySQL XAMPP, database `adventureworks2`, lihat keputusan nomor 1) | [Selesai / x dari 4 anggota] |
+| Minimal 5 pertanyaan bisnis beserta fakta dan dimensinya | Selesai (7 pertanyaan) | `docs/pertanyaan-bisnis.md`, diuji dengan `sql/uji-pertanyaan-bisnis.sql` |
+>>>>>>> 8e89a9a9849aeb3584e487ea1059e137395bb815
 | Pernyataan grain dalam satu kalimat | Selesai | `docs/desain-star-schema-v1.md`, Langkah 2 |
 | Star schema versi 1 | Selesai | `docs/star-schema-v1.png`, `docs/star-schema-v1.dbml` |
 | Baris bus matrix tim | Selesai | `docs/bus-matrix.md` |
 | Profil data sumber: jumlah baris, rentang tanggal, jumlah NULL | Selesai | `sql/profil-data-sumber.sql`, hasil di `docs/profil-data.md` |
-| Minimal 3 risiko dan penanganannya | Selesai (10 risiko) | `docs/piagam-proyek.md` bagian 6 |
 
 Angka kunci dari profil data:
 
@@ -41,8 +46,13 @@ Angka kunci dari profil data:
 - [Tambahkan kendala komunikasi atau anggota yang sulit dihubungi, jika ada.]
 
 ## 4. Keputusan yang butuh persetujuan sponsor
+<<<<<<< HEAD
 1. **Database MySQL XAMPP, bukan PostgreSQL.** Halaman tugas menyebut PostgreSQL untuk database sumber. Tim memakai MySQL/MariaDB XAMPP untuk sumber maupun data warehouse, dengan dump `adventureworks2` dari dosen yang di-import apa adanya (data 2011–2014). Alasannya: satu jenis database untuk seluruh proyek, dan data sama persis dengan file dosen. Mohon persetujuan. Kalau sponsor meminta PostgreSQL, data bisa dipindahkan karena isinya sama.
 2. **Grain dan lima dimensi.** Grain satu baris per baris pesanan reseller, dengan 5 dimensi: Tanggal (3 peran: pesan, jatuh tempo, kirim), Produk, Reseller (membawa wilayah penjualan toko), Sales Person, dan Promosi. Mata uang berupa kolom `kode_mata_uang` di fakta.
+=======
+1. **Database MySQL XAMPP.** Tim memakai MySQL/MariaDB XAMPP untuk sumber maupun data warehouse, dengan dump `adventureworks2` dari dosen yang di-import apa adanya (data 2011–2014). Alasannya: satu jenis database untuk seluruh proyek, dan data sama persis dengan file dosen. Mohon persetujuan. 
+2. **Grain dan dimensi.** Grain satu baris per baris pesanan reseller, dengan 8 dimensi: Tanggal (3 peran), Produk, Reseller, Sales Person, Wilayah, Promosi, Mata Uang, Metode Kirim.
+>>>>>>> 8e89a9a9849aeb3584e487ea1059e137395bb815
 3. **Ongkos kirim dan pajak di luar lingkup v1.** Keduanya dicatat per pesanan. Jika dibutuhkan, kami usulkan alokasi proporsional ke baris berdasarkan nilai penjualan.
 4. **Biaya produk historis.** `total_biaya_produk` memakai `production_productcosthistory` sesuai tanggal pesan, bukan biaya terbaru, karena 14.387 baris punya biaya yang berbeda.
 5. **Sales person dari header pesanan**, bukan dari toko, karena 41% pesanan punya sales person yang berbeda dengan sales person toko saat ini. **Wilayah penjualan dari toko**, karena sama dengan wilayah di pesanan pada 3.806 dari 3.806 pesanan.
@@ -52,19 +62,35 @@ Angka kunci dari profil data:
 ## 5. Rencana pekan depan
 | Target | Penanggung jawab |
 |--------|------------------|
+<<<<<<< HEAD
 | Source-to-target mapping untuk setiap kolom dimensi dan fakta | Riki Audy Bin G (ETL Developer) |
 | Strategi SCD tiap dimensi beserta alasannya (usulan tipe 2 untuk `dim_sales_person`) | Taufiq Tri W (Data Modeler) |
 | Urutan load: staging, dimensi, lalu fakta | Riki Audy Bin G (ETL Developer) |
 | Desain cube: dimensi, hierarki, dan measure, termasuk calculated member margin | Chandra Febryan Saputra (OLAP Developer) |
 | Wireframe dashboard untuk kelima pertanyaan bisnis | Zaky (Dashboard Developer) |
 | Star schema versi 2 setelah kesepakatan conformed dimension | Taufiq Tri W (Data Modeler) |
+=======
+| Source-to-target mapping untuk setiap kolom dimensi dan fakta | Riki Audy Bin G ETL Developer |
+| Strategi SCD tiap dimensi beserta alasannya (usulan tipe 2 untuk `dim_sales_person`) | Taufiq Tri W Data Modeler |
+| Urutan load: staging, dimensi, lalu fakta | Riki Audy Bin G ETL Developer |
+| Desain cube: dimensi, hierarki, dan measure, termasuk calculated member margin | Chandra Febryan Saputra OLAP dan Dashboard Developer |
+| Wireframe dashboard untuk ketujuh pertanyaan bisnis | Chandra Febryan Saputra bersama Anggoro Adit H |
+| Star schema versi 2 setelah kesepakatan conformed dimension | Taufiq Tri W Data Modeler |
+>>>>>>> 8e89a9a9849aeb3584e487ea1059e137395bb815
 | Pentaho bisa dibuka dan terhubung ke MySQL XAMPP (driver JDBC MariaDB/MySQL, zona waktu sesi +05:30) di semua laptop | Semua anggota, dikoordinasi Anggoro Adit H |
 
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
+<<<<<<< HEAD
 | Anggoro Adit H | Project Manager | Piagam proyek, daftar risiko, laporan pekan 10 | [hash commit] |
 | Taufiq Tri W | Data Modeler | Pertanyaan bisnis, grain, star schema v1, bus matrix | [hash commit] |
 | Riki Audy Bin G | ETL Developer | Setup database sumber, query profil data, catatan kendala SQL | [hash commit] |
 | Chandra Febryan Saputra | OLAP Developer | Fakta dan dimensi tiap pertanyaan bisnis, daftar measure | [hash commit] |
 | Muhammad Zakky Ulil Amry | Dashboard Developer | Query uji pertanyaan bisnis dan temuan awal | [hash commit] |
+=======
+| Anggoro Adit H | Project Manager | piagam proyek, laporan pekan 10 | [hash commit] |
+| Taufiq Tri W | Data Modeler | [contoh: pertanyaan bisnis, grain, star schema v1, bus matrix] | [hash commit] |
+| Riki Audy Bin G | ETL Developer | [contoh: setup database, query profil data] | [hash commit] |
+| Chandra Febryan Saputra | OLAP dan Dashboard Developer | [contoh: query uji pertanyaan bisnis, kamus data awal] | [hash commit] |
+>>>>>>> 8e89a9a9849aeb3584e487ea1059e137395bb815
