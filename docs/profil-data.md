@@ -6,7 +6,7 @@ Database : `adventureworks2` di MySQL/MariaDB (XAMPP), hasil import dump dosen
 
 > **Asal data.** Rincian lengkap ada di `docs/sumber-data.md`. Database berasal dari dump MariaDB `adventureworks2` dari dosen (AdventureWorks2017 dari Microsoft, build 14.0.1000.169), di-import apa adanya ke XAMPP. Nama tabel berbentuk `skema_tabel`, misalnya `sales_salesorderheader`.
 >
-> **Zona waktu.** Kolom bertipe TIMESTAMP (misalnya OrderDate) di dump tergeser −05:30 (tertulis `2011-05-30 18:30:00`, padahal aslinya `2011-05-31 00:00:00`). Semua query dijalankan setelah `SET time_zone = '+05:30';` sehingga OrderDate tampil sesuai data asli, tanpa mengubah isi database. Tanpa baris ini, di laptop WIB OrderDate tampil `01:30` dan perbandingan dengan kolom DATETIME (misalnya periode biaya produk) bisa meleset. Kolom DATETIME (DueDate, ShipDate) tidak terpengaruh.
+> **Zona waktu.** Kolom bertipe TIMESTAMP (misalnya OrderDate) di dump tergeser −05:30 (tertulis `2011-05-30 18:30:00`, padahal aslinya `2011-05-31 00:00:00`). Semua query dijalankan setelah `SET time_zone = '+05:30';` sehingga OrderDate tampil sesuai data asli, tanpa mengubah isi database. Tanpa baris ini, di laptop WIB tanggal tetap benar tetapi jam tampil `01:30`. Kalau zona waktu sesi di bawah +05:30 (misalnya UTC), tanggal mundur sehari: pesanan reseller 2011 menjadi 485 (seharusnya 406), dan 4.325 baris tidak menemukan periode biaya produk (seharusnya 64). Kolom DATETIME (DueDate, ShipDate) tidak terpengaruh.
 >
 > Setiap anggota wajib menjalankan bagian 1 dan memastikan hasilnya sama sebelum lanjut.
 >
@@ -85,6 +85,8 @@ Database : `adventureworks2` di MySQL/MariaDB (XAMPP), hasil import dump dosen
 | Michael Blythe (275) | 2 Northeast | 3 Central | 2012-11-30 |
 | Jillian Carson (277) | 3 Central | 2 Northeast | 2012-11-30 |
 | José Saraiva (282) | 6 Canada | 10 United Kingdom | 2012-05-30 |
+
+Catatan: kolom `sales_salesperson.TerritoryID` untuk ketiganya **masih berisi wilayah lama** (275: Northeast, 277: Central, 282: Canada), padahal riwayat menunjukkan mereka sudah pindah. Contohnya, José Saraiva punya 100 pesanan reseller di Canada dan 171 di United Kingdom.
 
 ## 8. Konsistensi sales person dan wilayah
 
@@ -169,23 +171,25 @@ Ke-64 baris berasal dari 25 produk yang terjual setelah periode biaya terakhirny
 | `SUM(SubTotal)` di header | 80.487.704,18 |
 | Total nilai dari detail (rumus) | 80.487.704,18 |
 | `SUM(LineTotal)` | 80.487.704,18 |
-| Selisih | 0 |
+| Selisih setelah dibulatkan ke sen | 0 |
+| Selisih sebelum dibulatkan | USD 0,004 (`SUM(SubTotal)` = 80.487.704,1832, rumus = 80.487.704,179188) |
 | Total nilai diskon | 527.507,91 |
 | Total unit | 214.516 |
 
-Nilai penjualan dihitung dengan rumus `OrderQty * UnitPrice * (1 - UnitPriceDiscount)`. Hasilnya sama persis dengan subtotal header dan dengan kolom `LineTotal`. Rumus tetap dipakai di ETL supaya aturan perhitungannya tertulis jelas dan tidak bergantung pada kolom turunan.
+Nilai penjualan dihitung dengan rumus `OrderQty * UnitPrice * (1 - UnitPriceDiscount)`. Hasilnya sama persis dengan kolom `LineTotal`. Dengan `SUM(SubTotal)` di header ada selisih USD 0,004 karena SubTotal tiap pesanan dibulatkan ke 4 desimal, sehingga rekonsiliasi di pekan 13 dibandingkan setelah dibulatkan ke sen. Rumus tetap dipakai di ETL supaya aturan perhitungannya tertulis jelas dan tidak bergantung pada kolom turunan.
 
 ## Temuan dan dampaknya ke desain
 
 | Temuan | Dampak ke desain atau ETL |
 |--------|---------------------------|
 | 41% pesanan punya sales person berbeda dengan sales person toko saat ini | `sales_person_key` diambil dari header pesanan |
-| 38% pesanan punya wilayah berbeda dengan wilayah sales person saat ini, dan 3 sales person pernah pindah wilayah | `wilayah_key` diambil dari header pesanan. `dim_sales_person` kandidat SCD tipe 2 |
+| 38% pesanan punya wilayah berbeda dengan wilayah di tabel sales person, dan 3 sales person pernah pindah wilayah | wilayah penjualan diambil dari toko (sama dengan wilayah di pesanan pada 3.806 dari 3.806 pesanan) dan disimpan di `dim_reseller`. `dim_sales_person` memakai SCD tipe 2 |
+| `sales_salesperson.TerritoryID` tidak diperbarui untuk 3 sales person yang pindah | `wilayah_tugas` di `dim_sales_person` diambil dari `sales_salesterritoryhistory`, bukan dari `sales_salesperson` |
 | 14.387 baris punya biaya historis berbeda dengan biaya terbaru | `total_biaya_produk` memakai `production_productcosthistory` sesuai tanggal pesan |
-| Margin kotor total hanya 0,59%, negatif di 2013 dan 2014 | Pertanyaan P6 dan calculated member margin di cube |
+| Margin kotor total hanya 0,59%, negatif di 2013 dan 2014 | Pertanyaan P5 dan calculated member margin di cube |
 | 11 toko punya dua alamat | `dim_reseller` memakai alamat Main Office |
 | Warna dan ukuran kosong di sebagian produk | Diisi "Tidak ada" di `dim_produk` |
 | Kolom TIMESTAMP di dump tergeser −05:30 | Setiap sesi query dan koneksi ETL memakai `SET time_zone = '+05:30'`. Dicek: pesanan pertama tampil 2011-05-31 00:00:00 |
 | Nilai penjualan bisa dihitung dari rumus atau `LineTotal` | Rumus dipakai di ETL. Rekonsiliasi pakai `SUM(SubTotal)` header |
-| Hanya satu metode kirim | Dimensi tetap dipakai karena conformed |
+| Hanya satu metode kirim | Tidak dibuat dimensi metode kirim, karena tidak membedakan apa pun |
 | 2011 dan 2014 tidak setahun penuh | Ditandai di dashboard saat membandingkan antartahun |

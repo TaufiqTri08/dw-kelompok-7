@@ -23,9 +23,11 @@
 --    sesuai zona waktu sesi. Di dump dosen, nilai TIMESTAMP tersimpan
 --    tergeser -05:30, sehingga zona waktu sesi +05:30 mengembalikannya
 --    ke nilai asli Adventure Works (pesanan pertama 2011-05-31 00:00:00).
---    Tanpa baris ini, di laptop WIB OrderDate tampil 01:30 dan
---    perbandingan dengan kolom DATETIME (misalnya periode biaya produk)
---    bisa meleset.
+--    Tanpa baris ini, di laptop WIB tanggal tetap benar tetapi jam tampil
+--    01:30. Kalau zona waktu sesi di bawah +05:30 (misalnya UTC, yang
+--    sering dipakai server atau aplikasi Java), tanggal mundur sehari:
+--    pesanan reseller tahun 2011 terhitung 485, bukan 406, dan 4.325 baris
+--    tidak menemukan periode biaya produk, bukan 64.
 -- ---------------------------------------------------------------------
 SET time_zone = '+05:30';
 
@@ -279,8 +281,10 @@ WHERE h.OnlineOrderFlag = 0;
 -- 15. Rekonsiliasi awal (angka acuan untuk pekan 13)
 --     Nilai dihitung dengan rumus yang sama dengan rencana ETL:
 --     nilai_penjualan = OrderQty * UnitPrice * (1 - UnitPriceDiscount)
---     Total dari detail harus sama dengan SUM(SubTotal) di header
---     dan dengan SUM(LineTotal).
+--     Rumus sama persis dengan SUM(LineTotal) (80487704.179188).
+--     SUM(SubTotal) di header sedikit berbeda (80487704.1832) karena
+--     SubTotal tiap pesanan dibulatkan ke 4 desimal. Setelah dibulatkan
+--     ke sen (2 desimal), ketiganya sama: 80487704.18.
 -- ---------------------------------------------------------------------
 SELECT (SELECT ROUND(SUM(SubTotal), 2)
           FROM sales_salesorderheader

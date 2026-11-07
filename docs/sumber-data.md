@@ -45,13 +45,14 @@ Dump di-import **apa adanya** ke MySQL/MariaDB di XAMPP, ke database bernama `ad
 
 Ada dua hal yang perlu diperhatikan.
 
-**a. Batas ukuran paket.** Perintah terbesar di dump berukuran sekitar 1 MB (1.045.756 byte), hampir sama dengan batas bawaan XAMPP (`max_allowed_packet=1M`). Batas ini dinaikkan menjadi 64M di `my.ini` sebelum import.
+**a. Batas ukuran paket.** Sekitar 100 perintah INSERT di dump berukuran hampir 1 MB. Yang terbesar 1.045.756 byte, hanya sekitar 2.800 byte di bawah batas bawaan `max_allowed_packet=1M` (1.048.576 byte). Sebagai pengaman, batas ini dinaikkan menjadi 64M di `my.ini` sebelum import.
 
 **b. Zona waktu kolom TIMESTAMP.**
 
 - Kolom bertipe **TIMESTAMP** (misalnya `OrderDate` dan `ModifiedDate`) di dump tercatat tergeser **−05:30**. Contohnya, OrderDate pesanan pertama tertulis `2011-05-30 18:30:00`, padahal data Microsoft aslinya `2011-05-31 00:00:00`. Pergeserannya seragam: semua 31.465 OrderDate berakhir di jam 18:30:00.
 - MySQL menyimpan TIMESTAMP dalam UTC dan menampilkannya sesuai **zona waktu sesi**. Dump memakai `TIME_ZONE='+00:00'`, sehingga nilainya tersimpan sebagai UTC.
-- Tanpa pengaturan apa pun, laptop berzona WIB (+07:00) menampilkan `2011-05-31 01:30:00`. Tanggalnya benar, tetapi jamnya tidak, dan perbandingan dengan kolom DATETIME bisa meleset. Contohnya periode biaya di `production_productcosthistory`.
+- Tanpa pengaturan apa pun, laptop berzona WIB (+07:00) menampilkan `2011-05-31 01:30:00`. Tanggalnya benar dan hasil query tugas ini tetap sama (sudah dicek), hanya jamnya yang salah.
+- Masalah sebenarnya muncul kalau zona waktu sesi **di bawah +05:30**, misalnya UTC, yang sering dipakai server atau aplikasi Java seperti Pentaho. Tanggal pesanan mundur sehari: pesanan 1 Januari 2012 terhitung ke 2011 (pesanan reseller 2011 menjadi 485, bukan 406), dan 4.325 baris tidak menemukan periode biaya di `production_productcosthistory` (seharusnya hanya 64), sehingga margin salah.
 - Karena itu, setiap sesi query dimulai dengan:
   ```sql
   SET time_zone = '+05:30';
@@ -68,7 +69,7 @@ Ada dua hal yang perlu diperhatikan.
 | `SELECT COUNT(*) FROM sales_salesorderheader` | 31.465 |
 | Pesanan reseller (`OnlineOrderFlag = 0`) | 3.806 |
 | Tanggal pesanan reseller pertama (setelah `SET time_zone`) | 2011-05-31 |
-| Total penjualan reseller | `SUM(SubTotal)` = `SUM(LineTotal)` = USD 80.487.704,18 |
+| Total penjualan reseller | `SUM(SubTotal)` = `SUM(LineTotal)` = USD 80.487.704,18 (dibulatkan ke sen) |
 | Contoh satu baris: `SalesOrderID = 43659` | `SO43659`, `PO522145787`, SubTotal 20565.6206 |
 
 Semua hasil query acuan ada di `docs/hasil-query/`.

@@ -102,38 +102,7 @@ GROUP BY so.Type, so.Description, pc.Name
 ORDER BY nilai_diskon DESC;
 
 
--- P5a. 10 reseller dengan nilai penjualan terbesar
-SELECT s.Name AS reseller,
-       COUNT(DISTINCT h.SalesOrderID) AS jumlah_pesanan,
-       ROUND(SUM(d.OrderQty * d.UnitPrice * (1 - d.UnitPriceDiscount)), 2) AS nilai_penjualan
-FROM sales_salesorderdetail d
-JOIN sales_salesorderheader h ON h.SalesOrderID = d.SalesOrderID
-JOIN sales_customer c         ON c.CustomerID = h.CustomerID
-JOIN sales_store s            ON s.BusinessEntityID = c.StoreID
-WHERE h.OnlineOrderFlag = 0
-GROUP BY s.BusinessEntityID, s.Name
-ORDER BY nilai_penjualan DESC
-LIMIT 10;
-
--- P5b. Kontribusi per tipe bisnis reseller per tahun
-SELECT CASE SUBSTRING_INDEX(SUBSTRING_INDEX(s.Demographics, '<BusinessType>', -1), '</BusinessType>', 1)
-         WHEN 'BM' THEN 'Value Added Reseller'
-         WHEN 'BS' THEN 'Specialty Bike Shop'
-         WHEN 'OS' THEN 'Warehouse'
-         ELSE 'Tidak diketahui'
-       END AS tipe_bisnis,
-       YEAR(h.OrderDate) AS tahun,
-       ROUND(SUM(d.OrderQty * d.UnitPrice * (1 - d.UnitPriceDiscount)), 2) AS nilai_penjualan
-FROM sales_salesorderdetail d
-JOIN sales_salesorderheader h ON h.SalesOrderID = d.SalesOrderID
-JOIN sales_customer c         ON c.CustomerID = h.CustomerID
-JOIN sales_store s            ON s.BusinessEntityID = c.StoreID
-WHERE h.OnlineOrderFlag = 0
-GROUP BY tipe_bisnis, YEAR(h.OrderDate)
-ORDER BY tahun, nilai_penjualan DESC;
-
-
--- P6. Produk yang dijual di bawah biaya standar (margin negatif) per tahun
+-- P5. Produk yang dijual di bawah biaya standar (margin negatif) per tahun
 WITH baris AS (
   SELECT pc.Name AS kategori, p.Name AS produk,
          YEAR(h.OrderDate) AS tahun,
@@ -158,16 +127,3 @@ FROM baris
 GROUP BY tahun, kategori, produk
 HAVING SUM(nilai - biaya) < 0
 ORDER BY tahun, SUM(nilai - biaya);
-
-
--- P7. Porsi penjualan per mata uang transaksi per wilayah
-SELECT t.Name AS wilayah,
-       COALESCE(cr.ToCurrencyCode, 'USD') AS mata_uang,
-       ROUND(SUM(d.OrderQty * d.UnitPrice * (1 - d.UnitPriceDiscount)), 2) AS nilai_penjualan_usd
-FROM sales_salesorderdetail d
-JOIN sales_salesorderheader h   ON h.SalesOrderID = d.SalesOrderID
-JOIN sales_salesterritory t     ON t.TerritoryID  = h.TerritoryID
-LEFT JOIN sales_currencyrate cr ON cr.CurrencyRateID = h.CurrencyRateID
-WHERE h.OnlineOrderFlag = 0
-GROUP BY t.Name, mata_uang
-ORDER BY wilayah, nilai_penjualan_usd DESC;
