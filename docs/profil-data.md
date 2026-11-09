@@ -1,6 +1,6 @@
 # Profil Data Sumber: Penjualan Reseller
 
-Kelompok : 7
+Kelompok : X
 Query    : `sql/profil-data-sumber.sql` (nomor bagian di bawah sama dengan nomor di file SQL)
 Database : `adventureworks2` di MySQL/MariaDB (XAMPP), hasil import dump dosen
 
@@ -136,6 +136,20 @@ Hanya satu metode kirim yang dipakai: CARGO TRANSPORT 5 (3.806 pesanan).
 
 Catatan: 154 pesanan di France dan 1 pesanan di Germany tercatat dalam USD, bukan EUR. Ini sesuai data sumber, bukan kesalahan query.
 
+### Tambahan: kartu kredit di pesanan reseller
+
+`sales_salesorderheader.CreditCardID` terisi pada 3.799 dari 3.806 pesanan reseller (7 pesanan tanpa kartu). Tipe kartu dari `sales_creditcard.CardType`:
+
+| Tipe kartu | Pesanan |
+|------------|---------|
+| ColonialVoice | 1.057 |
+| Vista | 1.006 |
+| SuperiorCard | 970 |
+| Distinguish | 766 |
+| (tanpa kartu) | 7 |
+
+Sebarannya hampir merata. Metode pembayaran tidak ada di bus matrix kelas dan tidak dipakai kelima pertanyaan bisnis, sehingga dicatat sebagai kandidat dimensi yang ditunda (lihat `docs/narasi-star-schema.md` bagian 2).
+
 ## 13. Promosi
 
 | ID | Promosi | Jenis | Diskon | Baris |
@@ -183,7 +197,7 @@ Nilai penjualan dihitung dengan rumus `OrderQty * UnitPrice * (1 - UnitPriceDisc
 | Temuan | Dampak ke desain atau ETL |
 |--------|---------------------------|
 | 41% pesanan punya sales person berbeda dengan sales person toko saat ini | `sales_person_key` diambil dari header pesanan |
-| 38% pesanan punya wilayah berbeda dengan wilayah di tabel sales person, dan 3 sales person pernah pindah wilayah | wilayah penjualan diambil dari toko (sama dengan wilayah di pesanan pada 3.806 dari 3.806 pesanan) dan disimpan di `dim_reseller`. `dim_sales_person` memakai SCD tipe 2 |
+| 38% pesanan punya wilayah berbeda dengan wilayah di tabel sales person, dan 3 sales person pernah pindah wilayah | wilayah penjualan diambil dari header pesanan (sama dengan wilayah toko pada 3.806 dari 3.806 pesanan) dan disimpan di `dim_wilayah`. Wilayah tugas sales person berbeda, dan `dim_sales_person` memakai SCD tipe 2 |
 | `sales_salesperson.TerritoryID` tidak diperbarui untuk 3 sales person yang pindah | `wilayah_tugas` di `dim_sales_person` diambil dari `sales_salesterritoryhistory`, bukan dari `sales_salesperson` |
 | 14.387 baris punya biaya historis berbeda dengan biaya terbaru | `total_biaya_produk` memakai `production_productcosthistory` sesuai tanggal pesan |
 | Margin kotor total hanya 0,59%, negatif di 2013 dan 2014 | Pertanyaan P5 dan calculated member margin di cube |
@@ -191,5 +205,6 @@ Nilai penjualan dihitung dengan rumus `OrderQty * UnitPrice * (1 - UnitPriceDisc
 | Warna dan ukuran kosong di sebagian produk | Diisi "Tidak ada" di `dim_produk` |
 | Kolom TIMESTAMP di dump tergeser −05:30 | Setiap sesi query dan koneksi ETL memakai `SET time_zone = '+05:30'`. Dicek: pesanan pertama tampil 2011-05-31 00:00:00 |
 | Nilai penjualan bisa dihitung dari rumus atau `LineTotal` | Rumus dipakai di ETL. Rekonsiliasi pakai `SUM(SubTotal)` header |
-| Hanya satu metode kirim | Tidak dibuat dimensi metode kirim, karena tidak membedakan apa pun |
+| Hanya satu metode kirim (CARGO TRANSPORT 5) dan hanya 5 mata uang | `dim_metode_kirim` dan `dim_mata_uang` tetap dibuat karena dimensi conformed di bus matrix kelas. Keduanya berisi semua baris sumber (5 dan 105), dan hanya sebagian yang dipakai pesanan reseller |
+| 3.799 dari 3.806 pesanan punya kartu kredit (4 tipe kartu) | Metode pembayaran dicatat sebagai kandidat dimensi yang ditunda: tidak ada di bus matrix kelas dan tidak dipakai kelima pertanyaan |
 | 2011 dan 2014 tidak setahun penuh | Ditandai di dashboard saat membandingkan antartahun |

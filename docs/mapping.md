@@ -2,7 +2,7 @@
 
 Kelompok : X
 Proses   : Penjualan Reseller
-Versi    : 2 (hasil pekan 10, dikunci di Steering Review pekan 11/12)
+Versi    : 2 (hasil pekan 10, dikunci di Steering Review pekan 11/12). Star schema: 8 dimensi + 1 fakta
 Sumber   : database `adventureworks2` (hanya dibaca, sesi `SET time_zone = '+05:30'`)
 Target   : database `dw_kelompok_x` (tabel di `sql/ddl.sql`)
 
@@ -16,8 +16,9 @@ Perubahan dari v1 (pekan 9) ke v2 (pekan 10) dan desain fisik (pekan 11):
 |-----------|--------|
 | `dim_produk` mengikuti **struktur standar sponsor**: 12 kolom, dengan `biaya_standar` dan `harga_jual` bertipe SCD 2 serta kolom `berlaku_mulai`, `berlaku_sampai`, `is_current`. Kolom `ukuran`, `garis_produk`, `model`, `harga_list`, `status_jual` dari v1 dihapus | Catatan sponsor: "sesuaikan `dim_produk` dengan struktur standar". Lima kolom yang dihapus tidak dipakai oleh satu pun dari 5 pertanyaan bisnis |
 | `dim_sales_person` memakai SCD tipe 2: ditambah `berlaku_mulai`, `berlaku_sampai`, `is_current` | Tiga sales person pindah wilayah (lihat bagian 2) |
-| Strategi SCD: tipe 2 untuk `dim_produk` (biaya, harga) dan `dim_sales_person`, tipe 1 untuk `dim_reseller` dan `dim_promosi`, tipe 0 untuk `dim_tanggal` | Keputusan pekan 10 (bagian 2) |
-| `dim_tanggal` mengikuti skrip standar sponsor | Dimensi bersama seluruh kelas |
+| Strategi SCD: tipe 2 untuk `dim_produk` (biaya, harga) dan `dim_sales_person`, tipe 1 untuk `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim`, tipe 0 untuk `dim_tanggal` | Keputusan pekan 10 (bagian 2) |
+| Delapan dimensi dipertahankan (sama dengan v1): Tanggal, Produk, Reseller, Sales Person, Promosi, Wilayah, Mata Uang, Metode Kirim. Wilayah, mata uang, dan metode kirim berupa tabel sendiri, bukan atribut di `dim_reseller` atau kolom di fakta | Sesuai baris Penjualan Reseller di bus matrix kelas (delapan tanda ●). Ketiganya conformed dengan proses lain (Wilayah dipakai 4 proses, Metode Kirim 3, Mata Uang 2) sehingga penggabungan data antartim memakai dimensi yang sama |
+| `dim_tanggal` memakai skrip standar sponsor v1.0 apa adanya (12 kolom, `sql/dim_tanggal_mysql.sql`); kolom perkiraan v1 (hari, bulan, kuartal, tahun) diganti kolom skrip | Catatan sponsor: "gunakan dim_tanggal". Dimensi bersama seluruh kelas |
 | Tipe data, constraint, index, baris -1 | Ditetapkan di `sql/ddl.sql` (pekan 11) |
 
 ---
@@ -84,7 +85,7 @@ Kategori dan subkategori diratakan ke dalam satu tabel dimensi: empat tabel sumb
 ### 1.2 Target: dim_reseller   (SCD: tipe 1)
 Sumber utama: sales.store
 
-Join: `person.businessentityaddress`, `person.address`, `person.stateprovince`, `person.countryregion`, `sales.customer`, `sales.salesterritory`. Hasil: 701 toko + baris -1.
+Join: `person.businessentityaddress`, `person.address`, `person.stateprovince`, `person.countryregion`. Hasil: 701 toko + baris -1. Wilayah penjualan toko tidak disimpan di sini, tetapi di `dim_wilayah` (bagian 1.6).
 
 | Kolom target | Tipe | Tabel.kolom sumber | Transformasi | Aturan NULL |
 |--------------|------|--------------------|--------------|-------------|
@@ -98,9 +99,6 @@ Join: `person.businessentityaddress`, `person.address`, `person.stateprovince`, 
 | `kota` | VARCHAR(30) | address.City | alamat bertipe Main Office (`businessentityaddress.AddressTypeID`) | kosong → "Tidak diketahui" |
 | `provinsi` | VARCHAR(50) | stateprovince.Name | join lewat `address.StateProvinceID` | kosong → "Tidak diketahui" |
 | `negara` | VARCHAR(50) | countryregion.Name | join lewat `stateprovince.CountryRegionCode` | kosong → "Tidak diketahui" |
-| `nama_wilayah` | VARCHAR(50) | salesterritory.Name | lewat `customer.TerritoryID` (customer yang `StoreID`-nya toko ini). Satu wilayah per toko (dicek: tidak ada toko dengan dua wilayah). Dipakai `MIN(TerritoryID)` per `StoreID` | kosong → "Tidak diketahui" (tidak ada kasusnya) |
-| `negara_wilayah` | VARCHAR(50) | countryregion.Name | lewat `salesterritory.CountryRegionCode` | kosong → "Tidak diketahui" |
-| `grup_wilayah` | VARCHAR(50) | salesterritory.`Group` | langsung (`Group` perlu backtick di MySQL) | kosong → "Tidak diketahui" |
 
 ### 1.3 Target: dim_sales_person   (SCD: tipe 2)
 Sumber utama: sales.salesperson
@@ -138,11 +136,79 @@ Sumber utama: sales.specialoffer
 | `qty_maks` | INT | specialoffer.MaxQty | langsung | NULL → -1 (tanpa batas atas) |
 
 ### 1.5 Target: dim_tanggal   (SCD: tipe 0)
-Sumber utama: tidak ada. Dipasang dari skrip standar sponsor (v1.0), tidak dimapping dan tidak diubah.
+Sumber utama: tidak ada tabel sumber. Dipasang dari `sql/dim_tanggal_mysql.sql` (skrip standar sponsor v1.0, butuh MySQL 8.0+), tidak diubah. Kolom dibangkitkan oleh skrip dari deretan tanggal.
 
-2.192 baris (1 Januari 2010 sampai 31 Desember 2015) + baris `tanggal_key = -1`. Kolom dan tipenya mengikuti skrip sponsor (lihat `docs/kamus-data.md`). Fakta merujuknya lewat `tanggal_key` berformat YYYYMMDD.
+2.192 baris: 2.191 hari (1 Januari 2010 sampai 31 Desember 2015) + baris `tanggal_key = -1`. Fakta merujuknya tiga kali lewat `tanggal_key` berformat YYYYMMDD (tanggal pesan, jatuh tempo, kirim). Tidak ada kolom yang dimapping dari AdventureWorks, jadi ETL pekan depan cukup menghitung `DATE_FORMAT(OrderDate, '%Y%m%d')` untuk mengisi key di fakta.
 
-### 1.6 Target: fact_penjualan_reseller   (grain: satu produk dalam satu pesanan reseller)
+| Kolom target | Tipe | Sumber | Transformasi di skrip | Aturan NULL |
+|--------------|------|--------|-----------------------|-------------|
+| `tanggal_key` | INT | - (dibangkitkan) | `DATE_FORMAT(d, '%Y%m%d')` sebagai angka | -1 untuk tidak diketahui |
+| `tanggal` | DATE | - | satu baris per hari, UNIQUE | baris -1 = 1900-01-01 |
+| `tahun` | INT | - | `YEAR(d)` | baris -1 = 0 |
+| `semester` | INT | - | 1 bila bulan ≤ 6, selain itu 2 | baris -1 = 0 |
+| `kuartal` | INT | - | `QUARTER(d)` | baris -1 = 0 |
+| `bulan` | INT | - | `MONTH(d)` | baris -1 = 0 |
+| `nama_bulan` | VARCHAR(15) | - | `ELT(MONTH(d), 'Januari', ... 'Desember')` | baris -1 = Tidak diketahui |
+| `minggu_dalam_tahun` | INT | - | `WEEK(d, 3)` (minggu ISO 8601) | baris -1 = 0 |
+| `tanggal_dalam_bulan` | INT | - | `DAY(d)` | baris -1 = 0 |
+| `hari_dalam_minggu` | INT | - | `WEEKDAY(d) + 1` (Senin = 1) | baris -1 = 0 |
+| `nama_hari` | VARCHAR(15) | - | `ELT(WEEKDAY(d) + 1, 'Senin', ... 'Minggu')` | baris -1 = Tidak diketahui |
+| `is_akhir_pekan` | BOOLEAN | - | `WEEKDAY(d) >= 5` (Sabtu dan Minggu) | baris -1 = 0 |
+
+Urutan pemasangan: skrip ini dijalankan **sebelum** `sql/ddl.sql`. Skrip memakai `DROP TABLE IF EXISTS dim_tanggal`, yang sengaja gagal bila fakta sudah merujuknya. Untuk memasang ulang, hapus dulu `fact_penjualan_reseller` (atau jalankan ulang seluruh database), lalu jalankan skrip ini dan `ddl.sql`.
+
+### 1.6 Target: dim_wilayah   (SCD: tipe 1)
+Sumber utama: sales.salesterritory
+
+Join: `person.countryregion` (nama negara). 10 wilayah penjualan + baris -1. Seluruh 10 wilayah dipakai oleh pesanan reseller.
+
+| Kolom target | Tipe | Tabel.kolom sumber | Transformasi | Aturan NULL |
+|--------------|------|--------------------|--------------|-------------|
+| `wilayah_key` | INT | - | surrogate key dari DW | - |
+| `wilayah_id` | INT | salesterritory.TerritoryID | langsung (natural key, unik) | - |
+| `nama_wilayah` | VARCHAR(50) | salesterritory.Name | langsung (mis. Southeast, Canada) | - |
+| `kode_negara` | VARCHAR(3) | salesterritory.CountryRegionCode | langsung (US, CA, FR, DE, AU, GB) | - |
+| `nama_negara` | VARCHAR(50) | countryregion.Name | join lewat `salesterritory.CountryRegionCode` | kosong → "Tidak diketahui" (tidak ada kasusnya) |
+| `grup_wilayah` | VARCHAR(50) | salesterritory.`Group` | langsung (`Group` perlu backtick di MySQL). Nilai: North America, Europe, Pacific | - |
+
+Fakta memakai wilayah dari `h.TerritoryID`. Nilainya sama dengan wilayah toko pada 3.806 dari 3.806 pesanan (diuji di `sql/uji-dim-wilayah-mata-uang-metode.sql`). `wilayah_tugas` di `dim_sales_person` adalah hal yang berbeda: wilayah tempat sales person bertugas pada periode tertentu (SCD tipe 2).
+
+Query Table input di Pentaho:
+
+```sql
+SELECT t.TerritoryID AS wilayah_id, t.Name AS nama_wilayah, t.CountryRegionCode AS kode_negara,
+       c.Name AS nama_negara, t.`Group` AS grup_wilayah
+FROM sales_salesterritory t
+JOIN person_countryregion c ON c.CountryRegionCode = t.CountryRegionCode
+```
+
+### 1.7 Target: dim_mata_uang   (SCD: tipe 1)
+Sumber utama: sales.currency
+
+105 mata uang + baris -1. Pesanan reseller hanya memakai 5 di antaranya (USD, CAD, GBP, EUR, AUD). Semua kode dimuat supaya dimensi sama dengan tim lain.
+
+| Kolom target | Tipe | Tabel.kolom sumber | Transformasi | Aturan NULL |
+|--------------|------|--------------------|--------------|-------------|
+| `mata_uang_key` | INT | - | surrogate key dari DW | - |
+| `kode_mata_uang` | CHAR(3) | currency.CurrencyCode | langsung (kode ISO, natural key, unik) | - |
+| `nama_mata_uang` | VARCHAR(100) | currency.Name | langsung (mis. US Dollar) | - |
+
+Mata uang pesanan dicari lewat `h.CurrencyRateID` → `currencyrate.ToCurrencyCode`. Kurs kosong berarti transaksi dalam USD (2.629 pesanan). Seluruh nilai uang di fakta tetap dalam USD, jadi dimensi ini menjawab "transaksi memakai mata uang apa", bukan mengubah angka.
+
+### 1.8 Target: dim_metode_kirim   (SCD: tipe 1)
+Sumber utama: purchasing.shipmethod
+
+5 metode kirim + baris -1. Semua 3.806 pesanan reseller memakai satu metode: CARGO TRANSPORT 5. Empat metode lain tetap dimuat karena dimensi ini dipakai bersama proses Penjualan Online dan Pembelian.
+
+| Kolom target | Tipe | Tabel.kolom sumber | Transformasi | Aturan NULL |
+|--------------|------|--------------------|--------------|-------------|
+| `metode_key` | INT | - | surrogate key dari DW | - |
+| `metode_id` | INT | shipmethod.ShipMethodID | langsung (natural key, unik) | - |
+| `nama_metode` | VARCHAR(50) | shipmethod.Name | langsung | - |
+| `tarif_dasar` | DECIMAL(12,4) | shipmethod.ShipBase | langsung | - |
+| `tarif_per_kg` | DECIMAL(12,4) | shipmethod.ShipRate | langsung | - |
+
+### 1.9 Target: fact_penjualan_reseller   (grain: satu produk dalam satu pesanan reseller)
 Sumber utama: sales.salesorderdetail (d)
 
 Digabung dengan `sales.salesorderheader` (h) yang `OnlineOrderFlag = 0`. Hasil: **60.919 baris**.
@@ -159,20 +225,22 @@ Digabung dengan `sales.salesorderheader` (h) yang `OnlineOrderFlag = 0`. Hasil: 
 | `reseller_key` | INT | h.CustomerID → customer.StoreID | cari di `dim_reseller.reseller_id` | -1 |
 | `sales_person_key` | INT | h.SalesPersonID, h.OrderDate | cari di `dim_sales_person` dengan `sales_person_id = SalesPersonID` **dan** `DATE(OrderDate)` di antara `berlaku_mulai` dan `berlaku_sampai` | -1 |
 | `promosi_key` | INT | d.SpecialOfferID | cari di `dim_promosi.promosi_id` | -1 |
-| `kode_mata_uang` | CHAR(3) | h.CurrencyRateID → currencyrate.ToCurrencyCode | `COALESCE(ToCurrencyCode, 'USD')` | kurs kosong (2.629 pesanan) → USD |
+| `wilayah_key` | INT | h.TerritoryID | cari di `dim_wilayah.wilayah_id` | -1 (tidak ada kasusnya) |
+| `mata_uang_key` | INT | h.CurrencyRateID → currencyrate.ToCurrencyCode | cari di `dim_mata_uang.kode_mata_uang` dengan `COALESCE(ToCurrencyCode, 'USD')` | kurs kosong (2.629 pesanan) → USD |
+| `metode_key` | INT | h.ShipMethodID | cari di `dim_metode_kirim.metode_id` | -1 (tidak ada kasusnya) |
 | `jumlah_unit` | INT | d.OrderQty | langsung | - |
 | `nilai_penjualan` | DECIMAL(14,4) | d.OrderQty, d.UnitPrice, d.UnitPriceDiscount | `OrderQty * UnitPrice * (1 - UnitPriceDiscount)` | - |
 | `nilai_diskon` | DECIMAL(14,4) | d.OrderQty, d.UnitPrice, d.UnitPriceDiscount | `OrderQty * UnitPrice * UnitPriceDiscount` | - |
 | `total_biaya_produk` | DECIMAL(14,4) | d.OrderQty, dim_produk.biaya_standar | `OrderQty * biaya_standar` dari versi `dim_produk` yang ditemukan untuk `produk_key` | - |
 | `harga_satuan` | DECIMAL(14,4) | d.UnitPrice | langsung (harga saat transaksi) | - |
 
-Catatan pencarian key: setiap baris fakta harus menemukan **tepat satu** versi produk dan **tepat satu** versi sales person. Uji di `sql/uji-dim-produk-scd2.sql` bagian 3 (versi produk: 60.919 baris, 0 tanpa versi, 0 dengan lebih dari satu versi).
+Catatan pencarian key: setiap baris fakta harus menemukan **tepat satu** versi produk dan **tepat satu** versi sales person. Uji di `sql/uji-dim-produk-scd2.sql` bagian 3 (versi produk: 60.919 baris, 0 tanpa versi, 0 dengan lebih dari satu versi). Untuk wilayah, mata uang, dan metode kirim, `sql/uji-dim-wilayah-mata-uang-metode.sql` membuktikan 60.919 dari 60.919 baris menemukan key di ketiganya.
 
 ## Urutan load
 
 1. Pasang `dim_tanggal` standar v1.0, lalu jalankan `sql/ddl.sql` (fakta merujuk dimensi, jadi tabelnya harus ada lebih dulu).
 2. Staging: kosongkan semua tabel `stg_*`, lalu salin dari sumber lewat koneksi sumber ke koneksi DW (staging selalu dimulai dari kosong).
-3. Dimensi tipe 1: `dim_reseller` dan `dim_promosi` (tidak saling bergantung, urutan bebas).
+3. Dimensi tipe 1: `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim` (tidak saling bergantung, urutan bebas).
 4. Dimensi tipe 2: `dim_produk` dan `dim_sales_person` (dibangun dari riwayat di sumber, harus lengkap sebelum fakta).
 5. Fakta: `fact_penjualan_reseller` (semua key dicari ke dimensi yang sudah terisi).
 6. Rekonsiliasi (bagian 5): membuktikan data benar sebelum dipakai cube dan dashboard.
@@ -187,7 +255,10 @@ Perilaku jika ETL dijalankan ulang: dimensi tipe 1 memakai insert/update berdasa
 |---------|------|---------------------------|--------|
 | `dim_produk` | **Tipe 2** (`biaya_standar`, `harga_jual`), tipe 1 (nama, warna, subkategori, kategori), tipe 0 (`nomor_produk`) | biaya standar dan harga jual per periode | Struktur standar sponsor. Sumber menyimpan riwayat lengkap (`productcosthistory`, `productlistpricehistory`), dan 77 produk berganti biaya atau harga. Margin (P5) harus dihitung dengan biaya saat pesanan dibuat. Atribut deskriptif tidak punya riwayat yang dianalisis, jadi cukup ditimpa |
 | `dim_sales_person` | **Tipe 2** | `wilayah_tugas` | Data membuktikan perubahan terjadi: 3 sales person pindah wilayah. Analisis kinerja per wilayah (P2, P3) harus memakai wilayah saat pesanan dibuat, bukan wilayah terbaru. Riwayat tersedia lengkap di `sales_salesterritoryhistory` |
-| `dim_reseller` | Tipe 1 | nama, alamat, jumlah karyawan, wilayah | Sumber hanya menyimpan keadaan terbaru, tidak ada riwayat yang bisa dibangun. Analisis lokasi toko memakai alamat terbaru |
+| `dim_reseller` | Tipe 1 | nama, alamat, jumlah karyawan | Sumber hanya menyimpan keadaan terbaru, tidak ada riwayat yang bisa dibangun. Analisis lokasi toko memakai alamat terbaru |
+| `dim_wilayah` | Tipe 1 | nama wilayah, grup wilayah | Sepuluh wilayah tetap, tidak ada riwayat di sumber. Wilayah toko dan wilayah pesanan sama pada 3.806 dari 3.806 pesanan, sehingga tidak perlu versi |
+| `dim_mata_uang` | Tipe 1 | nama mata uang | Kode ISO tidak berubah, hanya nama yang mungkin diperbaiki penulisannya |
+| `dim_metode_kirim` | Tipe 1 | tarif dasar, tarif per kg | Sumber hanya menyimpan tarif terbaru, tidak ada riwayat tarif. Nilai uang di fakta tidak memakai tarif ini, jadi perubahan tarif tidak mengubah angka yang dianalisis |
 | `dim_promosi` | Tipe 1 | hampir tidak berubah | Promosi baru muncul sebagai baris baru. Masa berlakunya adalah atribut, bukan riwayat perubahan |
 | `dim_tanggal` | Tipe 0 | - | Tabel standar dari sponsor. Tanggal tidak pernah berubah, jadi tidak ada proses pembaruan |
 
@@ -227,7 +298,7 @@ Pesanan tanggal 2012-05-29 menunjuk ke versi 1, pesanan tanggal 2012-05-30 menun
 |---------|-----|---------------|
 | 0 | Pasang `dim_tanggal` standar v1.0, lalu jalankan `sql/ddl.sql` | Fakta merujuk dimensi |
 | 1 | Kosongkan tabel staging, lalu salin dari sumber (koneksi sumber → koneksi DW) | Staging selalu dimulai dari kosong |
-| 2 | Load dimensi tipe 1: `dim_reseller`, `dim_promosi` | Tidak saling bergantung, urutan bebas |
+| 2 | Load dimensi tipe 1: `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim` | Tidak saling bergantung, urutan bebas |
 | 3 | Load dimensi tipe 2: `dim_produk` (query bagian 1.1), `dim_sales_person` | Dibuat dari riwayat sumber, harus lengkap sebelum fakta |
 | 4 | Load `fact_penjualan_reseller` | Semua key dicari ke dimensi yang sudah terisi |
 | 5 | Rekonsiliasi (bagian 5) | Membuktikan data benar sebelum dipakai cube dan dashboard |
@@ -236,24 +307,26 @@ Pesanan tanggal 2012-05-29 menunjuk ke versi 1, pesanan tanggal 2012-05-30 menun
 
 ## 4. Daftar tabel staging
 
-Tabel dibuat di pekan 12 lewat Pentaho (tombol SQL pada langkah Table Output). Isinya salinan mentah, tanpa constraint, dikosongkan setiap ETL. Jumlahnya 20.
+Tabel dibuat di pekan 12 lewat Pentaho (tombol SQL pada langkah Table Output). Isinya salinan mentah, tanpa constraint, dikosongkan setiap ETL. Jumlahnya 22.
 
 | Tabel staging | Sumber | Dipakai untuk |
 |---------------|--------|---------------|
 | `stg_salesorderheader` | `sales_salesorderheader` (hanya `OnlineOrderFlag = 0`) | Fakta |
 | `stg_salesorderdetail` | `sales_salesorderdetail` | Fakta |
-| `stg_customer` | `sales_customer` | Fakta (pencarian `reseller_key`), `dim_reseller` (wilayah toko) |
+| `stg_customer` | `sales_customer` | Fakta (pencarian `reseller_key` lewat `StoreID`) |
 | `stg_store` | `sales_store` | `dim_reseller` |
-| `stg_businessentityaddress`, `stg_address`, `stg_stateprovince`, `stg_countryregion` | `person_businessentityaddress`, `person_address`, `person_stateprovince`, `person_countryregion` | `dim_reseller` |
+| `stg_businessentityaddress`, `stg_address`, `stg_stateprovince`, `stg_countryregion` | `person_businessentityaddress`, `person_address`, `person_stateprovince`, `person_countryregion` | `dim_reseller` (alamat toko), `dim_wilayah` (`stg_countryregion`: nama negara) |
 | `stg_salesperson` | `sales_salesperson` | `dim_sales_person` |
 | `stg_salesterritoryhistory` | `sales_salesterritoryhistory` | `dim_sales_person` (SCD tipe 2) |
-| `stg_salesterritory` | `sales_salesterritory` | `dim_reseller`, `dim_sales_person` |
+| `stg_salesterritory` | `sales_salesterritory` | `dim_wilayah`, `dim_sales_person` |
 | `stg_person`, `stg_employee` | `person_person`, `humanresources_employee` | `dim_sales_person` |
 | `stg_product`, `stg_productsubcategory`, `stg_productcategory` | `production_product`, `production_productsubcategory`, `production_productcategory` | `dim_produk` |
 | `stg_productcosthistory` | `production_productcosthistory` | `dim_produk` (`biaya_standar`, SCD tipe 2) |
 | `stg_productlistpricehistory` | `production_productlistpricehistory` | `dim_produk` (`harga_jual`, SCD tipe 2) |
 | `stg_specialoffer` | `sales_specialoffer` | `dim_promosi` |
-| `stg_currencyrate` | `sales_currencyrate` | Fakta (`kode_mata_uang`) |
+| `stg_currencyrate` | `sales_currencyrate` | Fakta (`mata_uang_key`) |
+| `stg_currency` | `sales_currency` | `dim_mata_uang` |
+| `stg_shipmethod` | `purchasing_shipmethod` | `dim_metode_kirim`, fakta (`metode_key`) |
 
 Catatan: kolom TIMESTAMP seperti `OrderDate` dibaca dengan zona waktu sesi +05:30 di koneksi sumber Pentaho. Tanggal sudah benar saat masuk staging. Kolom `StartDate` dan `EndDate` di tabel riwayat produk bertipe DATETIME dan tidak bergeser.
 
@@ -275,8 +348,12 @@ Angka acuan dari profil data dan dari `sql/uji-dim-produk-scd2.sql`. Semua harus
 | `MIN`/`MAX` tanggal pesan | 2011-05-31 / 2014-05-01 |
 | Baris `dim_produk` (tanpa -1) | 606 (504 produk, 77 di antaranya punya lebih dari satu versi) |
 | Produk dengan tepat satu versi berlaku sekarang (`berlaku_sampai = 9999-12-31`) | 504 dari 504 |
+| Baris `dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim` (tanpa -1) | 10, 105, 5 |
+| Pesanan per mata uang (`mata_uang_key`) | USD 2.629, CAD 692, GBP 188, EUR 172, AUD 125 (jumlah 3.806) |
+| Pesanan per metode kirim | CARGO TRANSPORT 5: 3.806, empat metode lain 0 |
+| `SUM(nilai_penjualan)` per grup wilayah | North America 67.985.726,79 (3.166 pesanan), Europe 10.907.642,01 (515), Pacific 1.594.335,37 (125). Jumlahnya 80.487.704,18, boleh berselisih 0,01 karena pembulatan |
 | Baris `dim_sales_person` (tanpa -1) | 20 |
-| Porsi nilai penjualan dengan `kode_mata_uang` bukan USD | 28,3% |
+| Porsi nilai penjualan dengan mata uang (`mata_uang_key`) bukan USD | 28,3% |
 | Jumlah baris `dim_reseller` (tanpa -1) | 701 |
 | Pesanan José Saraiva per versi | 100 (Canada) dan 171 (United Kingdom) |
 | Baris pesanan Sport-100 Helmet, Red per versi `dim_produk` | 200, 317, 336 |

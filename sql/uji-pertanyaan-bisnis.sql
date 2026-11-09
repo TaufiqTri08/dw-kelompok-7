@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Uji Pertanyaan Bisnis langsung ke database sumber
--- Kelompok : 7   |   Proses bisnis : Penjualan Reseller
+-- Kelompok : X   |   Proses bisnis : Penjualan Reseller
 -- Database : adventureworks2 (MySQL/MariaDB di XAMPP)
 --
 -- Tujuan:

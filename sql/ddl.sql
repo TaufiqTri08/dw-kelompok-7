@@ -1,4 +1,4 @@
--- ddl.sql | MySQL/MariaDB (XAMPP) | Kelompok X | Penjualan Reseller | Star schema v2
+-- ddl.sql | MySQL/MariaDB (XAMPP) | Kelompok X | Penjualan Reseller | Star schema v2 (8 dimensi)
 --
 -- Dijalankan di database DW (misalnya dw_kelompok_x), BUKAN di database sumber adventureworks2.
 -- Jalankan SETELAH dim_tanggal standar v1.0 terpasang (dim_tanggal tidak dibuat dan tidak dihapus di sini).
@@ -14,9 +14,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Hapus dengan urutan terbalik: fakta dulu, lalu dimensi
 DROP TABLE IF EXISTS fact_penjualan_reseller;
-DROP TABLE IF EXISTS dim_metode_kirim;   -- sisa percobaan sebelumnya (jika ada); aman dihapus
-DROP TABLE IF EXISTS dim_mata_uang;      -- idem
-DROP TABLE IF EXISTS dim_wilayah;        -- idem
+DROP TABLE IF EXISTS dim_metode_kirim;
+DROP TABLE IF EXISTS dim_mata_uang;
+DROP TABLE IF EXISTS dim_wilayah;
 DROP TABLE IF EXISTS dim_promosi;
 DROP TABLE IF EXISTS dim_sales_person;
 DROP TABLE IF EXISTS dim_reseller;
@@ -47,8 +47,7 @@ CREATE TABLE dim_produk (
 ) ENGINE=InnoDB;
 
 -- SCD tipe 1. Dimensi khusus tim reseller.
--- Membawa dua jenis lokasi: lokasi kantor toko (kota, provinsi, negara) dan wilayah penjualan toko
--- (nama_wilayah, negara_wilayah, grup_wilayah). Setiap toko hanya punya satu wilayah penjualan.
+-- Hanya membawa lokasi kantor toko (kota, provinsi, negara). Wilayah penjualan ada di dim_wilayah.
 CREATE TABLE dim_reseller (
   reseller_key    INT          NOT NULL AUTO_INCREMENT,
   reseller_id     INT          NOT NULL,
@@ -60,9 +59,6 @@ CREATE TABLE dim_reseller (
   kota            VARCHAR(30)  NOT NULL,
   provinsi        VARCHAR(50)  NOT NULL,
   negara          VARCHAR(50)  NOT NULL,
-  nama_wilayah    VARCHAR(50)  NOT NULL,      -- wilayah penjualan, mis. Southeast
-  negara_wilayah  VARCHAR(50)  NOT NULL,      -- negara dari wilayah penjualan
-  grup_wilayah    VARCHAR(50)  NOT NULL,      -- North America, Europe, Pacific
   PRIMARY KEY (reseller_key),
   CONSTRAINT uq_reseller_id UNIQUE (reseller_id)
 ) ENGINE=InnoDB;
@@ -81,6 +77,38 @@ CREATE TABLE dim_sales_person (
   PRIMARY KEY (sales_person_key),
   CONSTRAINT uq_sales_person_versi UNIQUE (sales_person_id, berlaku_mulai),
   CONSTRAINT ck_sales_person_periode CHECK (berlaku_mulai <= berlaku_sampai)
+) ENGINE=InnoDB;
+
+-- SCD tipe 1. Wilayah penjualan (10 wilayah). Dimensi conformed dengan proses lain di kelas.
+CREATE TABLE dim_wilayah (
+  wilayah_key     INT          NOT NULL AUTO_INCREMENT,
+  wilayah_id      INT          NOT NULL,      -- TerritoryID
+  nama_wilayah    VARCHAR(50)  NOT NULL,      -- mis. Southeast, Canada
+  kode_negara     VARCHAR(3)   NOT NULL,      -- US, CA, FR, DE, AU, GB
+  nama_negara     VARCHAR(50)  NOT NULL,      -- mis. United States
+  grup_wilayah    VARCHAR(50)  NOT NULL,      -- North America, Europe, Pacific
+  PRIMARY KEY (wilayah_key),
+  CONSTRAINT uq_wilayah_id UNIQUE (wilayah_id)
+) ENGINE=InnoDB;
+
+-- SCD tipe 1. Mata uang transaksi (semua kode di sales.currency). Nilai uang di fakta tetap dalam USD.
+CREATE TABLE dim_mata_uang (
+  mata_uang_key   INT          NOT NULL AUTO_INCREMENT,
+  kode_mata_uang  CHAR(3)      NOT NULL,      -- kode ISO, mis. USD
+  nama_mata_uang  VARCHAR(100) NOT NULL,      -- mis. US Dollar
+  PRIMARY KEY (mata_uang_key),
+  CONSTRAINT uq_mata_uang_kode UNIQUE (kode_mata_uang)
+) ENGINE=InnoDB;
+
+-- SCD tipe 1. Metode kirim (5 metode di sumber; pesanan reseller hanya memakai CARGO TRANSPORT 5).
+CREATE TABLE dim_metode_kirim (
+  metode_key      INT           NOT NULL AUTO_INCREMENT,
+  metode_id       INT           NOT NULL,     -- ShipMethodID
+  nama_metode     VARCHAR(50)   NOT NULL,
+  tarif_dasar     DECIMAL(12,4) NOT NULL,     -- ShipBase
+  tarif_per_kg    DECIMAL(12,4) NOT NULL,     -- ShipRate
+  PRIMARY KEY (metode_key),
+  CONSTRAINT uq_metode_id UNIQUE (metode_id)
 ) ENGINE=InnoDB;
 
 -- SCD tipe 1. Satu baris per program promosi; "No Discount" juga satu baris.
@@ -108,11 +136,24 @@ VALUES
    '1900-01-01', '9999-12-31', TRUE);
 
 INSERT INTO dim_reseller
-  (reseller_key, reseller_id, nama_reseller, tipe_bisnis, spesialisasi, tahun_buka, jumlah_karyawan, kota, provinsi, negara,
-   nama_wilayah, negara_wilayah, grup_wilayah)
+  (reseller_key, reseller_id, nama_reseller, tipe_bisnis, spesialisasi, tahun_buka, jumlah_karyawan, kota, provinsi, negara)
 VALUES
-  (-1, -1, 'Tidak diketahui', 'Tidak diketahui', 'Tidak diketahui', -1, -1, 'Tidak diketahui', 'Tidak diketahui', 'Tidak diketahui',
-   'Tidak diketahui', 'Tidak diketahui', 'Tidak diketahui');
+  (-1, -1, 'Tidak diketahui', 'Tidak diketahui', 'Tidak diketahui', -1, -1, 'Tidak diketahui', 'Tidak diketahui', 'Tidak diketahui');
+
+INSERT INTO dim_wilayah
+  (wilayah_key, wilayah_id, nama_wilayah, kode_negara, nama_negara, grup_wilayah)
+VALUES
+  (-1, -1, 'Tidak diketahui', '-', 'Tidak diketahui', 'Tidak diketahui');
+
+INSERT INTO dim_mata_uang
+  (mata_uang_key, kode_mata_uang, nama_mata_uang)
+VALUES
+  (-1, '---', 'Tidak diketahui');
+
+INSERT INTO dim_metode_kirim
+  (metode_key, metode_id, nama_metode, tarif_dasar, tarif_per_kg)
+VALUES
+  (-1, -1, 'Tidak diketahui', 0, 0);
 
 INSERT INTO dim_sales_person
   (sales_person_key, sales_person_id, nama_sales_person, jabatan, wilayah_tugas, persen_komisi, berlaku_mulai, berlaku_sampai, is_current)
@@ -137,7 +178,9 @@ CREATE TABLE fact_penjualan_reseller (
   reseller_key            INT           NOT NULL,
   sales_person_key        INT           NOT NULL,
   promosi_key             INT           NOT NULL,
-  kode_mata_uang          CHAR(3)       NOT NULL,   -- USD, CAD, GBP, EUR, AUD (kurs kosong di sumber = USD)
+  wilayah_key             INT           NOT NULL,
+  mata_uang_key           INT           NOT NULL,   -- USD, CAD, GBP, EUR, AUD (kurs kosong di sumber = USD)
+  metode_key              INT           NOT NULL,
   jumlah_unit             INT           NOT NULL,
   nilai_penjualan         DECIMAL(14,4) NOT NULL,
   nilai_diskon            DECIMAL(14,4) NOT NULL DEFAULT 0,
@@ -152,6 +195,9 @@ CREATE TABLE fact_penjualan_reseller (
   KEY ix_fpr_reseller           (reseller_key),
   KEY ix_fpr_sales_person       (sales_person_key),
   KEY ix_fpr_promosi            (promosi_key),
+  KEY ix_fpr_wilayah            (wilayah_key),
+  KEY ix_fpr_mata_uang          (mata_uang_key),
+  KEY ix_fpr_metode             (metode_key),
   CONSTRAINT fk_fpr_tanggal_pesan       FOREIGN KEY (tanggal_pesan_key)       REFERENCES dim_tanggal (tanggal_key),
   CONSTRAINT fk_fpr_tanggal_jatuh_tempo FOREIGN KEY (tanggal_jatuh_tempo_key) REFERENCES dim_tanggal (tanggal_key),
   CONSTRAINT fk_fpr_tanggal_kirim       FOREIGN KEY (tanggal_kirim_key)       REFERENCES dim_tanggal (tanggal_key),
@@ -159,8 +205,10 @@ CREATE TABLE fact_penjualan_reseller (
   CONSTRAINT fk_fpr_reseller            FOREIGN KEY (reseller_key)            REFERENCES dim_reseller (reseller_key),
   CONSTRAINT fk_fpr_sales_person        FOREIGN KEY (sales_person_key)        REFERENCES dim_sales_person (sales_person_key),
   CONSTRAINT fk_fpr_promosi             FOREIGN KEY (promosi_key)             REFERENCES dim_promosi (promosi_key),
+  CONSTRAINT fk_fpr_wilayah             FOREIGN KEY (wilayah_key)             REFERENCES dim_wilayah (wilayah_key),
+  CONSTRAINT fk_fpr_mata_uang           FOREIGN KEY (mata_uang_key)           REFERENCES dim_mata_uang (mata_uang_key),
+  CONSTRAINT fk_fpr_metode              FOREIGN KEY (metode_key)              REFERENCES dim_metode_kirim (metode_key),
   CONSTRAINT ck_fpr_jumlah_unit CHECK (jumlah_unit > 0),
   CONSTRAINT ck_fpr_nilai_penjualan CHECK (nilai_penjualan >= 0),
-  CONSTRAINT ck_fpr_nilai_diskon CHECK (nilai_diskon >= 0),
-  CONSTRAINT ck_fpr_kode_mata_uang CHECK (CHAR_LENGTH(kode_mata_uang) = 3)
+  CONSTRAINT ck_fpr_nilai_diskon CHECK (nilai_diskon >= 0)
 ) ENGINE=InnoDB;

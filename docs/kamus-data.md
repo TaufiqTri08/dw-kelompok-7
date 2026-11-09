@@ -2,7 +2,7 @@
 
 Kelompok : X
 Database : `dw_kelompok_x` (MySQL/MariaDB XAMPP, mesin InnoDB)
-Skrip    : `sql/ddl.sql` (star schema v2, 5 dimensi), `dim_tanggal` dari skrip standar sponsor v1.0 (isi versi yang dipakai: `dim_tanggal_mysql.sql` v____)
+Skrip    : `sql/ddl.sql` (star schema v2, 8 dimensi), `sql/dim_tanggal_mysql.sql` (skrip standar sponsor, versi 1.0, dipasang sebelum `ddl.sql`)
 Rincian sumber tiap kolom: `docs/mapping.md`
 
 Aturan yang berlaku di semua tabel:
@@ -31,7 +31,9 @@ Aturan yang berlaku di semua tabel:
 | `reseller_key` | INT | Toko pembeli | → Better Bike Shop | FK ke `dim_reseller` |
 | `sales_person_key` | INT | Sales person pembuat pesanan, versi yang berlaku pada tanggal pesan | → Tsvi Reiter | FK ke `dim_sales_person` |
 | `promosi_key` | INT | Promosi yang dipakai pada baris ini | → No Discount | FK ke `dim_promosi` |
-| `kode_mata_uang` | CHAR(3) | Mata uang transaksi | USD | Bukan FK (tidak ada dimensinya). Kurs kosong di sumber berarti USD. `CHECK` panjang 3 huruf. Nilai: USD, CAD, GBP, EUR, AUD |
+| `wilayah_key` | INT | Wilayah penjualan pesanan | → Southeast | FK ke `dim_wilayah`. Sama dengan wilayah toko pembeli |
+| `mata_uang_key` | INT | Mata uang transaksi | → US Dollar | FK ke `dim_mata_uang`. Kurs kosong di sumber berarti USD. Yang terpakai: USD, CAD, GBP, EUR, AUD |
+| `metode_key` | INT | Metode kirim pesanan | → CARGO TRANSPORT 5 | FK ke `dim_metode_kirim`. Semua pesanan reseller memakai satu metode |
 | `jumlah_unit` | INT | Jumlah unit terjual | 1 | Aditif. `CHECK > 0` |
 | `nilai_penjualan` | DECIMAL(14,4) | Nilai setelah diskon, USD | 2024,9940 | Aditif. `OrderQty × UnitPrice × (1 − UnitPriceDiscount)`. `CHECK >= 0` |
 | `nilai_diskon` | DECIMAL(14,4) | Potongan harga yang diberikan, USD | 0,0000 | Aditif. `OrderQty × UnitPrice × UnitPriceDiscount`. Bawaan 0 |
@@ -40,7 +42,7 @@ Aturan yang berlaku di semua tabel:
 
 Ukuran yang dihitung saat dipakai (tidak disimpan): margin kotor = `nilai_penjualan − total_biaya_produk`, persentase margin = margin ÷ `nilai_penjualan`, jumlah pesanan = `COUNT(DISTINCT nomor_pesanan)`.
 
-Index: satu index untuk setiap foreign key (7 index, nama `ix_fpr_...`). Kolom ukuran tidak diberi index.
+Index: satu index untuk setiap foreign key (10 index, nama `ix_fpr_...`). Kolom ukuran tidak diberi index.
 
 ---
 
@@ -71,7 +73,7 @@ Cara fakta memilih versi: `produk_id` sama dan tanggal pesan di antara `berlaku_
 
 ## `dim_reseller` (SCD tipe 1)
 
-**Grain:** satu toko. **Perkiraan baris:** 701 + baris -1. **Natural key unik:** `reseller_id`. Dimensi khusus tim reseller. Membawa wilayah penjualan toko.
+**Grain:** satu toko. **Perkiraan baris:** 701 + baris -1. **Natural key unik:** `reseller_id`. Dimensi khusus tim reseller. Hanya membawa lokasi kantor toko; wilayah penjualan ada di `dim_wilayah`.
 
 | Kolom | Tipe | Arti | Contoh | Catatan |
 |-------|------|------|--------|---------|
@@ -85,11 +87,8 @@ Cara fakta memilih versi: `produk_id` sama dan tanggal pesan di antara `berlaku_
 | `kota` | VARCHAR(30) | Kota alamat Main Office | Austell | |
 | `provinsi` | VARCHAR(50) | Provinsi atau negara bagian | Georgia | |
 | `negara` | VARCHAR(50) | Negara lokasi kantor toko | United States | |
-| `nama_wilayah` | VARCHAR(50) | Wilayah penjualan toko | Southeast | Berbeda dengan lokasi kantor. Satu toko, satu wilayah. 10 wilayah |
-| `negara_wilayah` | VARCHAR(50) | Negara dari wilayah penjualan | United States | |
-| `grup_wilayah` | VARCHAR(50) | Grup besar wilayah | North America | North America, Europe, Pacific |
 
-Hierarki lokasi: Negara → Provinsi → Kota → Reseller. Hierarki wilayah: Grup wilayah → Wilayah → Reseller.
+Hierarki lokasi: Negara → Provinsi → Kota → Reseller. Wilayah penjualan toko diambil dari `dim_wilayah` lewat fakta (wilayah pesanan sama dengan wilayah toko pada 3.806 dari 3.806 pesanan).
 
 ## `dim_sales_person` (SCD tipe 2)
 
@@ -128,27 +127,76 @@ Constraint tambahan: `CHECK (berlaku_mulai <= berlaku_sampai)`. Pencarian di ETL
 
 "No Discount" (id 1) adalah satu baris promosi biasa dengan diskon 0.
 
-## `dim_tanggal` (standar sponsor, tidak diubah)
+## `dim_wilayah` (SCD tipe 1)
 
-Dipasang dari skrip standar, bukan dibuat tim. Isi bagian ini **setelah skripnya diunduh dan dijalankan**, dengan bahasa sendiri.
-
-Fakta yang sudah diketahui dari halaman tugas pekan 11:
-
-- 2.192 baris: setiap hari dari 2010-01-01 sampai 2015-12-31, ditambah baris -1.
-- `tanggal_key` berformat YYYYMMDD (contoh 20130315, yang harus hari Jumat).
-- Baris -1 memakai tanggal 1900-01-01.
-- Hari pertama minggu adalah Senin. `minggu_dalam_tahun` mengikuti ISO 8601.
-- Dipakai tiga kali oleh fakta (tanggal pesan, jatuh tempo, kirim).
+**Grain:** satu wilayah penjualan. **Baris:** 10 + baris -1. **Natural key unik:** `wilayah_id`. Dimensi conformed (dipakai Penjualan Online, Penjualan Reseller, Kinerja Sales, Alasan Pembelian Pelanggan).
 
 | Kolom | Tipe | Arti | Contoh | Catatan |
 |-------|------|------|--------|---------|
-| `tanggal_key` | INT | Tanggal dalam bentuk angka YYYYMMDD | 20110531 | Primary key. Lihat pertanyaan di bawah |
-| (isi dari skrip yang diunduh) | | | | |
+| `wilayah_key` | INT | Surrogate key | 1 | Primary key |
+| `wilayah_id` | INT | `TerritoryID` | 5 | Unik |
+| `nama_wilayah` | VARCHAR(50) | Nama wilayah penjualan | Southeast | Northwest, Northeast, Central, Southwest, Southeast, Canada, France, Germany, Australia, United Kingdom |
+| `kode_negara` | VARCHAR(3) | Kode negara | US | US, CA, FR, DE, AU, GB |
+| `nama_negara` | VARCHAR(50) | Nama negara | United States | |
+| `grup_wilayah` | VARCHAR(50) | Grup besar wilayah | North America | North America, Europe, Pacific |
 
-Pertanyaan yang harus dijawab di kolom catatan (dari halaman tugas):
+Hierarki: Grup wilayah → Negara → Wilayah. Beda dengan `wilayah_tugas` di `dim_sales_person`, yaitu wilayah tempat seorang sales person bertugas pada periode tertentu.
 
-1. Kenapa `tanggal_key` berformat YYYYMMDD dan bukan angka urut? *Jawaban tim: ______*
-2. Kenapa baris -1 memakai tanggal 1900-01-01? *Jawaban tim: ______*
-3. Kenapa hari pertama minggu adalah Senin? *Jawaban tim: ______*
+## `dim_mata_uang` (SCD tipe 1)
+
+**Grain:** satu mata uang. **Baris:** 105 + baris -1. **Natural key unik:** `kode_mata_uang`. Dimensi conformed (Penjualan Online dan Penjualan Reseller).
+
+| Kolom | Tipe | Arti | Contoh | Catatan |
+|-------|------|------|--------|---------|
+| `mata_uang_key` | INT | Surrogate key | 1 | Primary key |
+| `kode_mata_uang` | CHAR(3) | Kode ISO | USD | Unik. Baris -1 memakai `---` |
+| `nama_mata_uang` | VARCHAR(100) | Nama mata uang | US Dollar | |
+
+Pesanan reseller hanya memakai lima kode: USD (2.629 pesanan), CAD (692), GBP (188), EUR (172), AUD (125). Seluruh nilai uang di fakta tetap dalam USD.
+
+## `dim_metode_kirim` (SCD tipe 1)
+
+**Grain:** satu metode kirim. **Baris:** 5 + baris -1. **Natural key unik:** `metode_id`. Dimensi conformed (Penjualan Online, Penjualan Reseller, Pembelian).
+
+| Kolom | Tipe | Arti | Contoh | Catatan |
+|-------|------|------|--------|---------|
+| `metode_key` | INT | Surrogate key | 1 | Primary key |
+| `metode_id` | INT | `ShipMethodID` | 5 | Unik |
+| `nama_metode` | VARCHAR(50) | Nama metode | CARGO TRANSPORT 5 | |
+| `tarif_dasar` | DECIMAL(12,4) | Tarif dasar pengiriman | 8,9900 | `ShipBase` |
+| `tarif_per_kg` | DECIMAL(12,4) | Tarif per kilogram | 1,4900 | `ShipRate` |
+
+Semua 3.806 pesanan reseller memakai CARGO TRANSPORT 5. Empat metode lain (XRQ - TRUCK GROUND, ZY - EXPRESS, OVERSEAS - DELUXE, OVERNIGHT J-FAST) ada di dimensi tetapi tidak dipakai proses ini.
+
+## `dim_tanggal` (standar sponsor v1.0, SCD tipe 0, tidak diubah)
+
+**Grain:** satu hari. **Baris:** 2.192 (2.191 hari dari 2010-01-01 sampai 2015-12-31, ditambah baris -1). **Natural key unik:** `tanggal` (UNIQUE).
+
+Dipasang dari `sql/dim_tanggal_mysql.sql` (salinan persis skrip dosen, versi 1.0, butuh MySQL 8.0+ karena memakai recursive CTE). Skrip ini **tidak boleh diubah**. Tabel dipakai tiga kali oleh fakta (role-playing): tanggal pesan, tanggal jatuh tempo, dan tanggal kirim.
+
+| Kolom | Tipe | Arti | Contoh (20130315) | Catatan |
+|-------|------|------|-------------------|---------|
+| `tanggal_key` | INT | Tanggal dalam bentuk angka YYYYMMDD | 20130315 | Primary key. -1 = tidak diketahui |
+| `tanggal` | DATE | Tanggal sebenarnya | 2013-03-15 | Unik. Baris -1 berisi 1900-01-01 |
+| `tahun` | INT | Tahun kalender | 2013 | Baris -1 berisi 0 |
+| `semester` | INT | 1 = Januari sampai Juni, 2 = Juli sampai Desember | 1 | |
+| `kuartal` | INT | 1 sampai 4 | 1 | |
+| `bulan` | INT | 1 sampai 12 | 3 | |
+| `nama_bulan` | VARCHAR(15) | Januari sampai Desember | Maret | Baris -1: Tidak diketahui |
+| `minggu_dalam_tahun` | INT | Minggu ISO 8601, 1 sampai 53 | 11 | 1 Januari bisa masuk minggu 52 atau 53 tahun sebelumnya (2010-01-01 minggu 53, 2011-01-01 minggu 52, 2012-01-01 minggu 52) |
+| `tanggal_dalam_bulan` | INT | 1 sampai 31 | 15 | |
+| `hari_dalam_minggu` | INT | Senin = 1 sampai Minggu = 7 | 5 | |
+| `nama_hari` | VARCHAR(15) | Senin sampai Minggu | Jumat | Baris -1: Tidak diketahui |
+| `is_akhir_pekan` | BOOLEAN | 1 untuk Sabtu dan Minggu | 0 | |
+
+Hierarki untuk cube: **Tahun → Kuartal → Bulan → Tanggal** (kolom `tahun`, `kuartal`, `bulan`, `tanggal`). Kolom `semester`, `minggu_dalam_tahun`, dan `nama_hari` tersedia bila dashboard membutuhkannya, tetapi kelima pertanyaan bisnis hanya memakai tahun dan kuartal.
+
+Baris -1 berisi nol dan teks "Tidak diketahui". Pesanan reseller di sumber selalu punya ketiga tanggal, sehingga tidak ada fakta yang memakai baris -1 untuk tanggal.
+
+Tiga pertanyaan dari halaman tugas, dijawab dengan bahasa tim (**tim membaca ulang dan mengubah jawaban ini dengan kata-kata sendiri sebelum dikumpulkan**):
+
+1. **Kenapa `tanggal_key` berformat YYYYMMDD dan bukan angka urut?** Angka YYYYMMDD bisa dibaca manusia tanpa membuka dimensi (20130315 pasti 15 Maret 2013), urutannya sama dengan urutan kalender, dan ETL bisa menghitungnya langsung dari tanggal sumber (`DATE_FORMAT(OrderDate, '%Y%m%d')`) tanpa mencari ke tabel. Angka urut tidak bermakna sehingga salah isi sulit ketahuan.
+2. **Kenapa baris -1 memakai tanggal 1900-01-01?** Kolom `tanggal` wajib terisi (NOT NULL) dan unik, jadi baris -1 butuh tanggal. 1900-01-01 berada jauh di luar rentang data (2010 sampai 2015), sehingga tidak bentrok dengan hari asli dan langsung terlihat sebagai tanggal pengganti.
+3. **Kenapa hari pertama minggu adalah Senin?** Skrip mengikuti standar ISO 8601: minggu mulai Senin, dan nomor minggu dihitung dengan `WEEK(d, 3)`. Dengan begitu `hari_dalam_minggu` Senin = 1 sampai Minggu = 7, dan akhir pekan jatuh di hari ke-6 dan ke-7. Satu aturan yang sama dipakai semua kelompok, sehingga angka antartim bisa digabung.
 
 Jika tim butuh atribut tambahan (misalnya hari libur), buat tabel terpisah yang terhubung lewat `tanggal_key`, jangan mengubah tabel standar.

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Profil Data Sumber: Penjualan Reseller Adventure Works
--- Kelompok      : 7
+-- Kelompok      : X
 -- Database      : adventureworks2 (MySQL/MariaDB di XAMPP),
 --                 hasil import dump dosen dump-adventureworks2-202509271927.sql
 -- Tujuan        : memahami isi data sumber sebelum mendesain star schema.

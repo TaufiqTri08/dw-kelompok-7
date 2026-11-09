@@ -1,6 +1,6 @@
 # Piagam Proyek Data Warehouse
 
-Kelompok      : 7
+Kelompok      : X
 Proses bisnis : Penjualan Reseller
 Sponsor       : [nama dosen]
 Tanggal       : [tanggal diajukan, pekan 10]
@@ -57,11 +57,11 @@ Semua anggota ikut di setiap tahap. Peran berarti penanggung jawab. Tim berisi 5
 
 | Nama | NPM | Peran utama |
 |------|-----|-------------|
-| Anggoro Adit H | [23082010006] | Project Manager (ketua tim) |
-| Taufiq Tri W | [23082010008] | Data Modeler |
-| Riki Audy Bin G | [23082010011] | ETL Developer |
-| Chandra Febryan Saputra | [23082010132] | OLAP Developer |
-| Muhammad Zakky Ulil Amry | [23082010086] | Dashboard Developer |
+| Anggoro Adit H | [NPM] | Project Manager (ketua tim) |
+| Taufiq Tri W | [NPM] | Data Modeler |
+| Riki Audy Bin G | [NPM] | ETL Developer |
+| Chandra Febryan Saputra | [NPM] | OLAP Developer |
+| Zaky | [NPM] | Dashboard Developer |
 
 Pembagian tugas dan aturan anggota untuk Steering Review pekan 11 ada di `docs/pembagian-tugas-pekan-11.md`.
 
@@ -70,17 +70,17 @@ Pembagian tugas dan aturan anggota untuk Steering Review pekan 11 ada di `docs/p
 | Komponen | Pilihan |
 |----------|---------|
 | Sumber | MySQL/MariaDB di XAMPP, database `adventureworks2` (hanya dibaca): AdventureWorks2017 dari Microsoft, dari dump dosen yang di-import apa adanya. Rincian di `docs/sumber-data.md` |
-| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_7` |
+| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_x` |
 | ETL | Pentaho Data Integration CE (versi sama untuk semua anggota) |
 | OLAP | Mondrian |
 | Dashboard | Web dengan chart library (usulan: Chart.js) |
-| Repositori | Git, satu repositori tim `dw-kelompok-7` |
+| Repositori | Git, satu repositori tim `dw-kelompok-X` |
 
 ## 6. Risiko awal
 
 | Risiko | Dampak | Rencana penanganan |
 |--------|--------|--------------------|
-| Sales person dan wilayah di pesanan berbeda dengan data toko dan sales person saat ini (41% dan 38% pesanan) | Penjualan tercatat ke sales person atau wilayah yang salah | Ambil `SalesPersonID` dari header pesanan. Wilayah penjualan diambil dari toko (sama dengan wilayah di pesanan pada semua 3.806 pesanan) dan disimpan di `dim_reseller`. Wilayah tugas sales person disimpan dengan SCD tipe 2 di `dim_sales_person` |
+| Sales person dan wilayah di pesanan berbeda dengan data toko dan sales person saat ini (41% dan 38% pesanan) | Penjualan tercatat ke sales person atau wilayah yang salah | Ambil `SalesPersonID` dari header pesanan. Wilayah penjualan diambil dari header pesanan (sama dengan wilayah toko pada semua 3.806 pesanan) dan disimpan di `dim_wilayah`. Wilayah tugas sales person disimpan dengan SCD tipe 2 di `dim_sales_person` |
 | Biaya standar produk berubah dari waktu ke waktu (14.387 baris berbeda dengan biaya terbaru) | Margin salah hitung, padahal margin adalah temuan utama | Ambil biaya dari `production_productcosthistory` sesuai tanggal pesan, cadangan `production_product.StandardCost` untuk 64 baris tanpa periode |
 | Versi database Adventure Works berbeda antar-anggota atau antar-tim (versi lain memakai tahun berbeda) | Angka profil dan rekonsiliasi tidak cocok antar-laptop | Semua anggota meng-import file dump dosen yang sama. Bagian 1 query profil harus menghasilkan angka yang sama sebelum lanjut |
 | Kolom TIMESTAMP di dump tergeser −05:30, dan tampilannya bergantung pada zona waktu sesi | Di laptop WIB hanya jamnya yang salah. Tetapi kalau zona waktu sesi di bawah +05:30 (misalnya UTC di server atau Java), tanggal mundur sehari: angka per tahun salah dan 4.325 baris kehilangan periode biaya produk | Setiap sesi query dan koneksi Pentaho memakai `SET time_zone = '+05:30'`. Dicek: pesanan pertama tampil 2011-05-31 00:00:00 |

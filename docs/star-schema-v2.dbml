@@ -1,0 +1,128 @@
+// Star Schema v2 (8 dimensi) - Penjualan Reseller - Kelompok X
+// Tempel isi file ini di https://dbdiagram.io untuk melihat dan mengedit diagram.
+// Tipe data final, sama dengan sql/ddl.sql (pekan 11).
+
+Table fact_penjualan_reseller [note: 'Grain: satu baris per baris pesanan reseller (sales_salesorderdetail, OnlineOrderFlag = 0)'] {
+  tanggal_pesan_key       int [ref: > dim_tanggal.tanggal_key]
+  tanggal_jatuh_tempo_key int [ref: > dim_tanggal.tanggal_key]
+  tanggal_kirim_key       int [ref: > dim_tanggal.tanggal_key]
+  produk_key              int [ref: > dim_produk.produk_key]
+  reseller_key            int [ref: > dim_reseller.reseller_key]
+  sales_person_key        int [ref: > dim_sales_person.sales_person_key]
+  promosi_key             int [ref: > dim_promosi.promosi_key]
+  wilayah_key             int [ref: > dim_wilayah.wilayah_key]
+  mata_uang_key           int [ref: > dim_mata_uang.mata_uang_key, note: 'USD, CAD, GBP, EUR, AUD. Kurs kosong di sumber = USD']
+  metode_key              int [ref: > dim_metode_kirim.metode_key]
+  nomor_pesanan           varchar(25) [note: 'degenerate dimension: SalesOrderNumber']
+  nomor_baris_pesanan     int         [note: 'degenerate dimension: SalesOrderDetailID']
+  nomor_po_reseller       varchar(25) [note: 'degenerate dimension: PurchaseOrderNumber']
+  jumlah_unit             int           [note: 'aditif']
+  nilai_penjualan         decimal(14,4) [note: 'aditif, USD']
+  nilai_diskon            decimal(14,4) [note: 'aditif, USD']
+  total_biaya_produk      decimal(14,4) [note: 'aditif, USD, biaya_standar dari versi produk pada tanggal pesan']
+  harga_satuan            decimal(14,4) [note: 'non-aditif, tampilkan sebagai rata-rata']
+
+  indexes {
+    (nomor_pesanan, nomor_baris_pesanan) [unique]
+  }
+}
+
+Table dim_tanggal [note: 'Standar sponsor v1.0 (sql/dim_tanggal_mysql.sql), dipasang dari skrip, tidak diubah. 2.192 baris (2010-2015) + baris -1.'] {
+  tanggal_key         int         [pk, note: 'format YYYYMMDD; -1 = Tidak diketahui (1900-01-01)']
+  tanggal             date        [unique]
+  tahun               int
+  semester            int         [note: '1 = Jan-Jun, 2 = Jul-Des']
+  kuartal             int         [note: '1 s.d. 4']
+  bulan               int         [note: '1 s.d. 12']
+  nama_bulan          varchar(15)
+  minggu_dalam_tahun  int         [note: 'minggu ISO 8601, 1 s.d. 53']
+  tanggal_dalam_bulan int         [note: '1 s.d. 31']
+  hari_dalam_minggu   int         [note: 'Senin = 1 ... Minggu = 7']
+  nama_hari           varchar(15)
+  is_akhir_pekan      boolean     [note: '1 untuk Sabtu dan Minggu']
+}
+
+Table dim_produk [note: 'Conformed. Struktur standar sponsor. SCD campuran: nomor_produk tipe 0; nama, warna, subkategori, kategori tipe 1; biaya_standar dan harga_jual tipe 2 (satu baris per periode)'] {
+  produk_key     int [pk]
+  produk_id      int [note: 'production_product.ProductID']
+  nama_produk    varchar(50)
+  nomor_produk   varchar(25)
+  warna          varchar(15)
+  subkategori    varchar(50)
+  kategori       varchar(50)
+  biaya_standar  decimal(12,4) [note: 'SCD tipe 2']
+  harga_jual     decimal(12,4) [note: 'SCD tipe 2']
+  berlaku_mulai  date
+  berlaku_sampai date [note: '9999-12-31 = versi berlaku sekarang']
+  is_current     boolean
+
+  indexes {
+    (produk_id, berlaku_mulai) [unique]
+  }
+}
+
+Table dim_reseller [note: 'Khusus proses reseller. Sumber: sales_store + alamat Main Office + XML di kolom Demographics'] {
+  reseller_key    int [pk]
+  reseller_id     int [note: 'sales_store.BusinessEntityID']
+  nama_reseller   varchar(50)
+  tipe_bisnis     varchar(30)
+  spesialisasi    varchar(20)
+  tahun_buka      int
+  jumlah_karyawan int
+  kota            varchar(30)
+  provinsi        varchar(50)
+  negara          varchar(50)
+}
+
+Table dim_sales_person [note: 'Conformed dengan proses Kinerja Sales. SCD tipe 2: satu baris per periode wilayah tugas'] {
+  sales_person_key  int [pk]
+  sales_person_id   int [note: 'sales_salesperson.BusinessEntityID']
+  nama_sales_person varchar(150)
+  jabatan           varchar(50)
+  wilayah_tugas     varchar(50)
+  persen_komisi     decimal(6,4)
+  berlaku_mulai     date
+  berlaku_sampai    date [note: '9999-12-31 = versi berlaku sekarang']
+  is_current        boolean
+
+  indexes {
+    (sales_person_id, berlaku_mulai) [unique]
+  }
+}
+
+
+Table dim_promosi [note: 'Conformed dengan Penjualan Online'] {
+  promosi_key      int [pk]
+  promosi_id       int [note: 'sales_specialoffer.SpecialOfferID']
+  nama_promosi     varchar(255)
+  jenis_promosi    varchar(50)
+  kategori_promosi varchar(50)
+  persen_diskon    decimal(6,4)
+  tanggal_mulai    date
+  tanggal_selesai  date
+  qty_min          int
+  qty_maks         int
+}
+
+Table dim_wilayah [note: 'Conformed (4 proses). Sumber: sales_salesterritory + person_countryregion. SCD tipe 1. 10 wilayah + baris -1'] {
+  wilayah_key  int [pk]
+  wilayah_id   int [unique, note: 'sales_salesterritory.TerritoryID']
+  nama_wilayah varchar(50)
+  kode_negara  varchar(3)
+  nama_negara  varchar(50)
+  grup_wilayah varchar(50) [note: 'North America, Europe, Pacific']
+}
+
+Table dim_mata_uang [note: 'Conformed (2 proses). Sumber: sales_currency. SCD tipe 1. 105 mata uang + baris -1'] {
+  mata_uang_key  int [pk]
+  kode_mata_uang char(3) [unique, note: 'kode ISO']
+  nama_mata_uang varchar(100)
+}
+
+Table dim_metode_kirim [note: 'Conformed (3 proses). Sumber: purchasing_shipmethod. SCD tipe 1. 5 metode + baris -1'] {
+  metode_key   int [pk]
+  metode_id    int [unique, note: 'purchasing_shipmethod.ShipMethodID']
+  nama_metode  varchar(50)
+  tarif_dasar  decimal(12,4)
+  tarif_per_kg decimal(12,4)
+}

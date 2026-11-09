@@ -1,4 +1,4 @@
-// Star Schema v1 - Penjualan Reseller - Kelompok 7
+// Star Schema v1 (8 dimensi) - Penjualan Reseller - Kelompok X
 // Tempel isi file ini di https://dbdiagram.io untuk melihat dan mengedit diagram.
 // Tipe data masih perkiraan. Tipe final ditetapkan di desain fisik (pekan 11).
 
@@ -10,7 +10,9 @@ Table fact_penjualan_reseller [note: 'Grain: satu baris per baris pesanan resell
   reseller_key            int [ref: > dim_reseller.reseller_key]
   sales_person_key        int [ref: > dim_sales_person.sales_person_key]
   promosi_key             int [ref: > dim_promosi.promosi_key]
-  kode_mata_uang          varchar(3) [note: 'USD, CAD, GBP, EUR, AUD. Kurs kosong di sumber = USD']
+  wilayah_key             int [ref: > dim_wilayah.wilayah_key]
+  mata_uang_key           int [ref: > dim_mata_uang.mata_uang_key, note: 'USD, CAD, GBP, EUR, AUD. Kurs kosong di sumber = USD']
+  metode_key              int [ref: > dim_metode_kirim.metode_key]
   nomor_pesanan           varchar(25) [note: 'degenerate dimension: SalesOrderNumber']
   nomor_baris_pesanan     int         [note: 'degenerate dimension: SalesOrderDetailID']
   nomor_po_reseller       varchar(25) [note: 'degenerate dimension: PurchaseOrderNumber']
@@ -50,7 +52,7 @@ Table dim_produk [note: 'Conformed'] {
   status_jual  varchar(30)
 }
 
-Table dim_reseller [note: 'Khusus proses reseller. Sumber: sales_store + alamat Main Office + XML di kolom Demographics + wilayah penjualan dari sales_customer'] {
+Table dim_reseller [note: 'Khusus proses reseller. Sumber: sales_store + alamat Main Office + XML di kolom Demographics'] {
   reseller_key    int [pk]
   reseller_id     int [note: 'sales_store.BusinessEntityID']
   nama_reseller   varchar(50)
@@ -61,9 +63,6 @@ Table dim_reseller [note: 'Khusus proses reseller. Sumber: sales_store + alamat 
   kota            varchar(30)
   provinsi        varchar(50)
   negara          varchar(50)
-  nama_wilayah    varchar(50) [note: 'wilayah penjualan toko']
-  negara_wilayah  varchar(50)
-  grup_wilayah    varchar(50)
 }
 
 Table dim_sales_person [note: 'Conformed dengan proses Kinerja Sales. Kandidat SCD tipe 2 untuk wilayah_tugas'] {
@@ -87,4 +86,27 @@ Table dim_promosi [note: 'Conformed dengan Penjualan Online'] {
   tanggal_selesai  date
   qty_min          int
   qty_maks         int
+}
+
+Table dim_wilayah [note: 'Conformed (4 proses). Sumber: sales_salesterritory + person_countryregion. SCD tipe 1. 10 wilayah + baris -1'] {
+  wilayah_key  int [pk]
+  wilayah_id   int [unique, note: 'sales_salesterritory.TerritoryID']
+  nama_wilayah varchar(50)
+  kode_negara  varchar(3)
+  nama_negara  varchar(50)
+  grup_wilayah varchar(50) [note: 'North America, Europe, Pacific']
+}
+
+Table dim_mata_uang [note: 'Conformed (2 proses). Sumber: sales_currency. SCD tipe 1. 105 mata uang + baris -1'] {
+  mata_uang_key  int [pk]
+  kode_mata_uang char(3) [unique, note: 'kode ISO']
+  nama_mata_uang varchar(100)
+}
+
+Table dim_metode_kirim [note: 'Conformed (3 proses). Sumber: purchasing_shipmethod. SCD tipe 1. 5 metode + baris -1'] {
+  metode_key   int [pk]
+  metode_id    int [unique, note: 'purchasing_shipmethod.ShipMethodID']
+  nama_metode  varchar(50)
+  tarif_dasar  decimal(12,4)
+  tarif_per_kg decimal(12,4)
 }

@@ -3,7 +3,7 @@
 Kelompok : X
 Proses   : Penjualan Reseller
 Versi    : 2 (hasil pekan 10)
-Dasar    : `docs/desain-star-schema-v1.md`, `docs/mapping.md`, `sql/ddl.sql`
+Dasar    : `docs/desain-star-schema-v1.md`, `docs/mapping.md`, `sql/ddl.sql` (8 dimensi)
 
 Dokumen ini adalah rancangan untuk pekan 13 (cube Mondrian) dan pekan 14 (dashboard). Belum ada yang dibangun. Perubahan setelah desain dikunci memakai permintaan perubahan (`docs/perubahan/CR-xx.md`).
 
@@ -25,10 +25,11 @@ Dokumen ini adalah rancangan untuk pekan 13 (cube Mondrian) dan pekan 14 (dashbo
 | Produk | `dim_produk` | **Warna** → Produk | Hierarki kedua |
 | Reseller | `dim_reseller` | **Lokasi:** Negara → Provinsi → Kota → Reseller | |
 | Reseller | `dim_reseller` | **Tipe Bisnis:** Tipe Bisnis → Reseller | Tambahan, belum dipakai pertanyaan (untuk analisis lanjutan) |
-| Reseller | `dim_reseller` | **Wilayah Penjualan:** Grup Wilayah → Wilayah → Reseller | Dipakai P3 (menggantikan dimensi Wilayah terpisah) |
 | Sales Person | `dim_sales_person` | Wilayah Tugas → Sales Person | Lihat catatan SCD tipe 2 di bawah |
 | Promosi | `dim_promosi` | Jenis Promosi → Promosi | |
-| Mata Uang | kolom `kode_mata_uang` di fakta | Mata Uang | Dimensi degeneratif (tanpa tabel dimensi). Tambahan, belum dipakai pertanyaan |
+| Wilayah | `dim_wilayah` lewat `wilayah_key` | **Grup Wilayah** → Negara → Wilayah | Dimensi bersama. Dipakai P3 |
+| Mata Uang | `dim_mata_uang` lewat `mata_uang_key` | Mata Uang | Dimensi bersama. Tambahan, belum dipakai pertanyaan (5 dari 105 kode terpakai) |
+| Metode Kirim | `dim_metode_kirim` lewat `metode_key` | Metode Kirim | Dimensi bersama. Tambahan, belum dipakai pertanyaan (hanya CARGO TRANSPORT 5 terpakai) |
 
 Catatan SCD tipe 2 pada Produk: struktur `dim_produk` mengikuti standar sponsor, dengan `biaya_standar` dan `harga_jual` bertipe SCD 2, sehingga satu produk bisa punya beberapa baris (606 baris untuk 504 produk). Level "Produk" memakai `produk_id` sebagai kolom key dan `nama_produk` sebagai nama, supaya total per produk menyatu walaupun biayanya berganti. Level Kategori dan Subkategori tidak terpengaruh karena nilainya sama di semua versi.
 
@@ -108,7 +109,7 @@ Gambar wireframe: `docs/wireframe-dashboard.png` (sumber `docs/wireframe-dashboa
 | Produk di bawah biaya | P5 | Tabel urut menurun | Margin Kotor, Jumlah Baris Pesanan | Produk (kategori, nama produk) | Urut per kolom |
 | Penjualan per kuartal | P1 | Diagram garis | Nilai Penjualan | Tanggal Pesan (kuartal), Produk (kategori) | Telusuri kategori ke subkategori |
 | Sales person terbaik | P2 | Batang horizontal | Nilai Penjualan, Margin Kotor, Jumlah Pesanan | Sales Person, Tanggal Pesan (tahun) | Filter tahun |
-| Penjualan per wilayah | P3 | Batang horizontal | Nilai Penjualan, Jumlah Unit | Reseller (grup wilayah → wilayah), tahun | Telusuri grup ke wilayah |
+| Penjualan per wilayah | P3 | Batang horizontal | Nilai Penjualan, Jumlah Unit | Wilayah (grup wilayah → negara → wilayah), tahun | Telusuri grup ke wilayah |
 | Diskon per promosi | P4 | Batang bertumpuk | Nilai Diskon, Jumlah Unit | Promosi (jenis), Produk (kategori) | Hover menampilkan unit |
 
 ### 2.3 Aturan tampilan
@@ -126,7 +127,7 @@ Gambar wireframe: `docs/wireframe-dashboard.png` (sumber `docs/wireframe-dashboa
 | Berapa ongkos kirim per pesanan | Ongkos kirim dicatat per pesanan, di luar lingkup v1 |
 | Apakah target sales tercapai | Milik proses Kinerja Sales vs Target |
 
-Dua pertanyaan dari usulan awal (reseller terbesar dan porsi penjualan non-USD) dilepas dari lingkup dashboard, lihat `docs/pertanyaan-bisnis.md`. Datanya tetap bisa ditelusuri di cube lewat dimensi Reseller dan Mata Uang.
+Dua pertanyaan dari usulan awal (reseller terbesar dan porsi penjualan non-USD) dilepas dari lingkup dashboard, lihat `docs/pertanyaan-bisnis.md`. Datanya tetap bisa ditelusuri di cube lewat dimensi Reseller dan Mata Uang (dimensi Mata Uang tetap berisi USD sebagai mata uang nilai di fakta).
 
 ---
 
@@ -137,4 +138,6 @@ Dua pertanyaan dari usulan awal (reseller terbesar dan porsi penjualan non-USD) 
 | Grain fakta | Seluruh ETL fakta, semua measure cube, semua panel |
 | Atribut `dim_sales_person` (SCD tipe 2) | ETL dimensi dan pencarian key fakta, level cube Sales Person, panel P2 |
 | Hierarki `dim_produk` | Cube, panel P1, P4, dan P5 |
+| Atribut `dim_wilayah` | ETL `dim_wilayah`, level cube Wilayah, panel P3 dan filter wilayah di seluruh halaman |
+| Menambah atau menghapus dimensi (misalnya `dim_metode_kirim`) | DDL, mapping, urutan load, staging, cube, diagram, dan bus matrix. Fakta menambah atau menghapus satu kolom key |
 | Rumus `total_biaya_produk` | ETL fakta, calculated member margin, panel P2 dan P5 |
