@@ -7,9 +7,8 @@ Status        : Hijau
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
 |------------------|--------|-----------------------------------------------|
-| Perbaiki star schema menjadi versi 2
-Ikuti catatan sponsor dari Steering Review hari ini. Pakai struktur dim_tanggal standar apa adanya. Sesuaikan dim_produk dengan struktur standar.| Selesai | [`docs/mapping.md` bagian 1](https://github.com/TaufiqTri08/dw-kelompok 7/blob/c5a0b306546e918b897e4bb6b01da6c8b029a3f7/docs/mapping.md) |
-| Strategi SCD tiap dimensi (tipe 0, 1, atau 2) beserta alasannya | Selesai | `docs/mapping.md` bagian 2 |
+| Ikuti catatan sponsor dari Steering Review hari ini. Pakai struktur dim_tanggal standar apa adanya. Sesuaikan dim_produk dengan struktur standar.| Selesai | [ (https://github.com/TaufiqTri08/dw-kelompok-7/blob/c6cd48458c17ddcfd78a9952c2a831c279e8900f/docs/star-schema-v2.png) |
+|Source-to-target mapping lengkap Untuk setiap kolom di setiap dimensi dan fakta. Pakai templat di bawah. | Selesai | [`docs/mapping.md` bagian 2](https://github.com/TaufiqTri08/dw-kelompok-7/blob/c5a0b306546e918b897e4bb6b01da6c8b029a3f7/docs/mapping.md) |
 | Urutan load: staging, dimensi, lalu fakta | Selesai | `docs/mapping.md` bagian 3 |
 | Desain cube: dimensi, hierarki, measure, calculated member margin | Selesai | `docs/desain-cube-dashboard.md` bagian 1 |
 | Wireframe dashboard untuk kelima pertanyaan bisnis | Selesai | `docs/wireframe-dashboard.png`, rincian panel di `docs/desain-cube-dashboard.md` bagian 2 |
