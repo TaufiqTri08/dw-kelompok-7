@@ -15,20 +15,6 @@ Status        : Hijau
 | Wireframe dashboard untuk kelima pertanyaan bisnis | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5fd33bdf93d7e630aa0c31de3acb6a06c42f8e9c/docs/Dashboard%20Penjualan%20Reseller%20-%20Wireframe%20v3%20(acuan%20Finnova).png |
 | Pentaho terhubung ke database sumber `adventureworks2` (MySQL XAMPP, zona waktu sesi +05:30) di laptop tiap anggota | Selesai |  |
 
-Perubahan dari star schema v1 ke v2:
-
-- `dim_sales_person` memakai SCD tipe 2 (kolom `berlaku_mulai`, `berlaku_sampai`, `is_current`). Alasannya: tiga sales person pindah wilayah. José Saraiva punya 100 pesanan saat bertugas di Canada dan 171 pesanan sesudah pindah ke United Kingdom.
-- `dim_produk` disesuaikan dengan **struktur standar sponsor** (12 kolom): `biaya_standar` dan `harga_jual` memakai SCD tipe 2, ditambah `berlaku_mulai`, `berlaku_sampai`, `is_current`. Kolom usulan v1 `ukuran`, `garis_produk`, `model`, `harga_list`, `status_jual` dihapus karena tidak dipakai kelima pertanyaan bisnis. 77 produk berganti biaya atau harga, sehingga dimensi berisi 606 baris untuk 504 produk.
-- Jumlah dimensi tetap **delapan** seperti v1: Tanggal, Produk, Reseller, Sales Person, Promosi, Wilayah, Mata Uang, dan Metode Kirim (sesuai bus matrix kelas). Dimensi lain memakai SCD tipe 1: `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, dan `dim_metode_kirim`.
-- `dim_tanggal` memakai skrip standar sponsor v1.0 apa adanya (`sql/dim_tanggal_mysql.sql`, 12 kolom, 2.192 baris), menggantikan kolom perkiraan di v1.
-
-Angka kunci:
-
-- Mapping mencakup 8 dimensi dan 1 fakta (60.919 baris, 10 key di fakta), ditulis dengan templat mapping dari dosen. `dim_sales_person` berisi 20 versi dari 17 sales person, dan `dim_produk` 606 versi dari 504 produk.
-- Urutan load: dim_tanggal dan DDL, staging, dimensi tipe 1, dimensi tipe 2 (`dim_produk`, `dim_sales_person`), fakta, rekonsiliasi.
-- Angka rekonsiliasi untuk ETL: 60.919 baris fakta, 3.806 pesanan, nilai penjualan USD 80.487.704,18, margin kotor USD 476.896,95.
-- Cube: 7 measure (termasuk jumlah pesanan dengan distinct-count dan harga satuan dengan avg) dan 4 calculated member.
-- Daftar tabel staging: 22 tabel.
 
 ## 2. Kendala pengerjaan
 | No | Kendala | Yang sudah dicoba | Status |
