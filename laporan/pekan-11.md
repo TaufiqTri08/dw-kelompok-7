@@ -30,10 +30,7 @@ Status        : Hijau
 - Terkait dim_tanggal.sql kemarin yang diberi oleh dosen. terdapat error pada SET SESSION cte_max_recursion_depth = 10000; karena mysql nya saya berapa di mariadb
 
 ## 4. Keputusan yang butuh persetujuan sponsor
-1. **Strategi SCD.** `dim_sales_person` dan `dim_produk` (biaya dan harga) memakai tipe 2, `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, dan `dim_metode_kirim` tipe 1, `dim_tanggal` tipe 0 (alasan di mapping bagian 2). Mohon persetujuan, karena `dim_sales_person` adalah dimensi conformed dengan proses Kinerja Sales dan strategi SCD-nya perlu disepakati bersama.
-2. **Struktur kolom dimensi conformed baru.** `dim_wilayah` (`wilayah_id`, `nama_wilayah`, `kode_negara`, `nama_negara`, `grup_wilayah`), `dim_mata_uang` (`kode_mata_uang`, `nama_mata_uang`), dan `dim_metode_kirim` (`metode_id`, `nama_metode`, `tarif_dasar`, `tarif_per_kg`) mengikuti kolom sumber AdventureWorks. Mohon sponsor mengonfirmasi bahwa struktur ini sama dengan tim lain, supaya penggabungan data antartim memakai dimensi yang sama. Metode pembayaran (4 tipe kartu kredit) tidak dibuat karena tidak ada di bus matrix kelas dan tidak dipakai kelima pertanyaan; bisa diajukan lewat permintaan perubahan.
-3. **Struktur `dim_produk`.** Sesuai catatan sponsor, `dim_produk` memakai struktur standar (12 kolom). Mohon sponsor mengonfirmasi bahwa atribut tambahan usulan v1 (ukuran, garis produk, model, harga list, status jual) tidak diperlukan. Bila diperlukan, kami ajukan sebagai tabel tambahan lewat permintaan perubahan (`docs/perubahan/CR-xx.md`), bukan dengan mengubah tabel standar.
-4. **Tahun parsial.** Data reseller berawal 31 Mei 2011 dan berakhir 1 Mei 2014. Dashboard menandai 2011 dan 2014 saat membandingkan antartahun.
+1. **Tahun parsial.** Data reseller berawal 31 Mei 2011 dan berakhir 1 Mei 2014. Dashboard menandai 2011 dan 2014 saat membandingkan antartahun.
 
 ## 5. Rencana pekan depan
 | Target | Penanggung jawab |
