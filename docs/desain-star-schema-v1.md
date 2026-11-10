@@ -1,6 +1,6 @@
 # Desain Star Schema v1: Penjualan Reseller
 
-Kelompok : X
+Kelompok : 7
 Versi    : 1 (usulan pekan 9, untuk Steering Review pekan 10)
 Diagram  : `docs/star-schema-v1.png` (versi yang bisa diedit: `docs/star-schema-v1.dbml`, tempel ke dbdiagram.io)
 
