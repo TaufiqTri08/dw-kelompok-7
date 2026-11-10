@@ -47,7 +47,7 @@ Status        : Hijau
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
 | Anggoro Adit H | Project Manager | Laporan pekan 11, daftar keputusan sponsor, koordinasi koneksi Pentaho |  |
-| Taufiq Tri W | Data Modeler | Strategi SCD, star schema v2 (termasuk `dim_produk` standar sponsor) | cc37d0d {https://github.com/TaufiqTri08/dw-kelompok-7/commit/cc37d0d6ca09164f2d17dcc0e3c643c5fc78b746} |
+| Taufiq Tri W | Data Modeler | Strategi SCD, star schema v2 (termasuk `dim_produk` standar sponsor) | cc37d0d [https://github.com/TaufiqTri08/dw-kelompok-7/commit/cc37d0d6ca09164f2d17dcc0e3c643c5fc78b746] |
 | Riki Audy Bin G | ETL Developer | Mapping kolom, urutan load, daftar staging, koneksi Pentaho |  |
 | Chandra Febryan Saputra | OLAP Developer | Desain cube: hierarki, measure, calculated member | |
 | Zaky | Dashboard Developer | Wireframe dashboard |  |
