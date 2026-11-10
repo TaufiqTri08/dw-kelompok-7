@@ -1,6 +1,6 @@
 # Desain Cube dan Wireframe Dashboard
 
-Kelompok : X
+Kelompok : 7
 Proses   : Penjualan Reseller
 Versi    : 2 (hasil pekan 10)
 Dasar    : `docs/desain-star-schema-v1.md`, `docs/mapping.md`, `sql/ddl.sql` (8 dimensi)

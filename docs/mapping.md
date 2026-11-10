@@ -1,14 +1,11 @@
 # Source-to-Target Mapping, Strategi SCD, Urutan Load, dan Tabel Staging
 
-Kelompok : X
+Kelompok : 7
 Proses   : Penjualan Reseller
 Versi    : 2 (hasil pekan 10, dikunci di Steering Review pekan 11/12). Star schema: 8 dimensi + 1 fakta
 Sumber   : database `adventureworks2` (hanya dibaca, sesi `SET time_zone = '+05:30'`)
-Target   : database `dw_kelompok_x` (tabel di `sql/ddl.sql`)
+Target   : database `dw_kelompok_7` (tabel di `sql/ddl.sql`)
 
-Dokumen ini memakai **templat source-to-target mapping dari dosen** (pertemuan 10, bagian Tugas): satu tabel per tabel target dengan kolom *Kolom target, Tipe, Tabel.kolom sumber, Transformasi, Aturan NULL*, lalu daftar *Urutan load*. Bagian 2 sampai 5 melengkapi tugas lain (strategi SCD, staging, rekonsiliasi).
-
-**Cara membaca nama sumber.** Mengikuti templat, sumber ditulis `skema.tabel` dan `tabel.kolom` (misalnya `production.product`, `product.Name`). Di dump MariaDB nama tabelnya digabung dengan garis bawah: `production.product` menjadi `production_product`. Tipe kolom target sama dengan `sql/ddl.sql`.
 
 Perubahan dari v1 (pekan 9) ke v2 (pekan 10) dan desain fisik (pekan 11):
 
