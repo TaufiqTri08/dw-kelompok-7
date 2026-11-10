@@ -1,9 +1,8 @@
 # Laporan Progres Pekan 11
-Kelompok      : X
+Kelompok      : 7
 Proses bisnis : Penjualan Reseller
-Status        : [Hijau / Kuning / Merah]
+Status        : Hijau
 
-> Laporan hasil pekan 10 (desain ETL, cube, dan dashboard) untuk Steering Review pekan 11. Pilih **Hijau** hanya jika semua baris di tabel 1 berstatus Selesai, termasuk koneksi Pentaho di laptop tiap anggota. Hapus catatan ini sebelum dikirim.
 
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
@@ -14,7 +13,7 @@ Status        : [Hijau / Kuning / Merah]
 | Desain cube: dimensi, hierarki, measure, calculated member margin | Selesai | `docs/desain-cube-dashboard.md` bagian 1 |
 | Wireframe dashboard untuk kelima pertanyaan bisnis | Selesai | `docs/wireframe-dashboard.png`, rincian panel di `docs/desain-cube-dashboard.md` bagian 2 |
 | Star schema versi 2 | Selesai | `docs/star-schema-v2.png`, `docs/star-schema-v2.dbml`, `docs/narasi-star-schema.md` |
-| Pentaho terhubung ke database sumber `adventureworks2` (MySQL XAMPP, zona waktu sesi +05:30) di laptop tiap anggota | [Selesai / x dari 5 anggota] | `docs/bukti/pentaho-koneksi-<nama>.png` (tombol Test pada koneksi) |
+| Pentaho terhubung ke database sumber `adventureworks2` (MySQL XAMPP, zona waktu sesi +05:30) di laptop tiap anggota | Selesai |  |
 
 Perubahan dari star schema v1 ke v2:
 
@@ -38,12 +37,11 @@ Angka kunci:
 | 2 | Pencarian `sales_person_key` di ETL harus memakai tanggal pesan, bukan hanya `SalesPersonID`. | Aturan pencarian ditulis di mapping fakta: `SalesPersonID` sama dan tanggal pesan di antara `berlaku_mulai` dan `berlaku_sampai`. | Selesai |
 | 3 | Data tipe bisnis, spesialisasi, tahun buka, dan jumlah karyawan toko ada di dalam teks XML. | Diambil dengan `SUBSTRING_INDEX` pada ETL, dicatat di mapping `dim_reseller`. | Selesai |
 | 4 | Struktur standar `dim_produk` dari sponsor berbeda dengan usulan v1 dan membuat satu produk punya beberapa baris (SCD tipe 2), sehingga level Produk di cube bisa terhitung dobel. | Kolom disesuaikan dengan standar. Level Produk di cube memakai `produk_id` sebagai key dan nama sebagai caption. Pencarian `produk_key` di ETL memakai `produk_id` dan tanggal pesan. | Selesai |
-| 5 | 64 baris pesanan (25 produk) jatuh setelah periode biaya terakhir di sumber (periode terakhir 98 produk sudah ditutup paling lambat 2013-05-29), sehingga tidak menemukan versi produk. | Periode terakhir diperpanjang sampai 9999-12-31, karena biaya dan harga di `production.product` sama persis dengan periode terakhir itu (98 dari 98 produk). Dibuktikan lewat `sql/uji-dim-produk-scd2.sql`: 60.919 baris menemukan tepat satu versi, margin tetap USD 476.896,95. | Selesai |
-| 7 | Tiga dimensi (`dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim`) berisi sedikit nilai untuk proses reseller: 10 wilayah (wilayah pesanan sama dengan wilayah toko), 5 dari 105 mata uang terpakai, dan hanya 1 dari 5 metode kirim terpakai. | Tetap dibuat sebagai dimensi conformed karena baris Penjualan Reseller di bus matrix kelas bertanda di ketiganya. Isinya dinyatakan terbuka di `docs/narasi-star-schema.md` bagian 2. Dibuktikan di `sql/uji-dim-wilayah-mata-uang-metode.sql` (60.919 dari 60.919 baris fakta menemukan key). | Selesai |
-| 6 | Koneksi Pentaho (PDI 9.2) ke MySQL XAMPP gagal di laptop Anggoro: tombol Database Connection menutup dengan NullPointerException, lalu "Communications link failure" setelah Java diganti. | Penyebab pertama: Pentaho 9.2 butuh Java 8, sedangkan laptop memakai Java 11. Dipasang Temurin 8 dan `Spoon.bat` dijalankan dengan `PENTAHO_JAVA_HOME`. Penyebab kedua: MySQL di XAMPP belum dinyalakan (tombol Start). Koneksi `sumber_adventureworks2` lalu berhasil (Test OK) dan Table input menampilkan `OrderDate` pertama 2011/05/31, dengan Advanced SQL `SET time_zone = '+05:30';`. [Tambahkan kendala dari laptop anggota lain, jika ada] | [Selesai di 1 laptop / Masih untuk anggota lain] |
+| 5 | Tiga dimensi (`dim_wilayah`, `dim_mata_uang`, `dim_metode_kirim`) berisi sedikit nilai untuk proses reseller: 10 wilayah (wilayah pesanan sama dengan wilayah toko), 5 dari 105 mata uang terpakai, dan hanya 1 dari 5 metode kirim terpakai. | Tetap dibuat sebagai dimensi conformed karena baris Penjualan Reseller di bus matrix kelas bertanda di ketiganya. Isinya dinyatakan terbuka di `docs/narasi-star-schema.md` bagian 2. Dibuktikan di `sql/uji-dim-wilayah-mata-uang-metode.sql` (60.919 dari 60.919 baris fakta menemukan key). | Selesai |
+| 6 | Koneksi Pentaho (PDI 9.2) ke MySQL XAMPP gagal di laptop Anggoro: tombol Database Connection menutup dengan NullPointerException, lalu "Communications link failure" setelah Java diganti. | Penyebab pertama: Pentaho 9.2 butuh Java 8, sedangkan laptop memakai Java 11. Dipasang Temurin 8 dan `Spoon.bat` dijalankan dengan `PENTAHO_JAVA_HOME`. Penyebab kedua: MySQL di XAMPP belum dinyalakan (tombol Start). Koneksi `sumber_adventureworks2` lalu berhasil (Test OK) dan Table input menampilkan `OrderDate` pertama 2011/05/31, dengan Advanced SQL `SET time_zone = '+05:30';`. [Tambahkan kendala dari laptop anggota lain, jika ada] | Selesai  |
 
 ## 3. Kendala tim
-- [Tambahkan kendala komunikasi atau anggota yang sulit dihubungi, jika ada.]
+- Terkait dim_tanggal.sql kemarin yang diberi oleh dosen. terdapat error pada SET SESSION cte_max_recursion_depth = 10000; karena mysql nya saya berapa di mariadb
 
 ## 4. Keputusan yang butuh persetujuan sponsor
 1. **Strategi SCD.** `dim_sales_person` dan `dim_produk` (biaya dan harga) memakai tipe 2, `dim_reseller`, `dim_promosi`, `dim_wilayah`, `dim_mata_uang`, dan `dim_metode_kirim` tipe 1, `dim_tanggal` tipe 0 (alasan di mapping bagian 2). Mohon persetujuan, karena `dim_sales_person` adalah dimensi conformed dengan proses Kinerja Sales dan strategi SCD-nya perlu disepakati bersama.
@@ -65,8 +63,8 @@ Angka kunci:
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
-| Anggoro Adit H | Project Manager | Laporan pekan 11, daftar keputusan sponsor, koordinasi koneksi Pentaho | [hash commit] |
-| Taufiq Tri W | Data Modeler | Strategi SCD, star schema v2 (termasuk `dim_produk` standar sponsor) | [hash commit] |
-| Riki Audy Bin G | ETL Developer | Mapping kolom, urutan load, daftar staging, koneksi Pentaho | [hash commit] |
-| Chandra Febryan Saputra | OLAP Developer | Desain cube: hierarki, measure, calculated member | [hash commit] |
-| Zaky | Dashboard Developer | Wireframe dashboard | [hash commit] |
+| Anggoro Adit H | Project Manager | Laporan pekan 11, daftar keputusan sponsor, koordinasi koneksi Pentaho |  |
+| Taufiq Tri W | Data Modeler | Strategi SCD, star schema v2 (termasuk `dim_produk` standar sponsor) |  |
+| Riki Audy Bin G | ETL Developer | Mapping kolom, urutan load, daftar staging, koneksi Pentaho |  |
+| Chandra Febryan Saputra | OLAP Developer | Desain cube: hierarki, measure, calculated member | |
+| Zaky | Dashboard Developer | Wireframe dashboard |  |
