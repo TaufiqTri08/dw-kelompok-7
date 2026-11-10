@@ -13,7 +13,7 @@ Status        : Hijau
 | Urutan load: staging, dimensi, lalu fakta | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/c5a0b306546e918b897e4bb6b01da6c8b029a3f7/docs/mapping.md |
 | Desain cube: dimensi, hierarki, measure, calculated member margin | Selesai |https://github.com/TaufiqTri08/dw-kelompok-7/blob/5fd33bdf93d7e630aa0c31de3acb6a06c42f8e9c/docs/desain-cube-dashboard.md |
 | Wireframe dashboard untuk kelima pertanyaan bisnis | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5fd33bdf93d7e630aa0c31de3acb6a06c42f8e9c/docs/Dashboard%20Penjualan%20Reseller%20-%20Wireframe%20v3%20(acuan%20Finnova).png |
-| Pentaho terhubung ke database sumber `adventureworks2` (MySQL XAMPP, zona waktu sesi +05:30) di laptop tiap anggota | Selesai |  |
+| Pentaho terhubung ke database sumber `adventureworks2` (MySQL XAMPP, zona waktu sesi +05:30) di laptop tiap anggota | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/7e9cfe47035b7b538bb25654fdb44edb7303023a/etl/Transformation%201.ktr |
 
 
 ## 2. Kendala pengerjaan
