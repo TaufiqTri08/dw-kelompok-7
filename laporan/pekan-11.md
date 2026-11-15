@@ -37,7 +37,7 @@ Status        : Hijau
 |--------|------------------|
 | Pasang `dim_tanggal` standar v1.0 | Taufiq Tri W (Data Modeler) |
 | Tulis `sql/ddl.sql` (semua dimensi dan fakta, baris -1, foreign key, index) yang bisa dijalankan dua kali | Taufiq Tri W (Data Modeler) |
-| Uji constraint dan simpan tangkapan layar error | Zaky (Dashboard Developer) |
+| Uji constraint dan simpan tangkapan layar error | Muhammad Zakky Ulil Amry (Dashboard Developer) |
 | ERD hasil reverse engineering dari database dan perbandingannya dengan star schema v2 | Chandra Febryan Saputra (OLAP Developer) |
 | Daftar tabel staging di dokumen mapping | Riki Audy Bin G (ETL Developer) |
 | Laporan pekan 12 | Anggoro Adit H (Project Manager) |
@@ -45,8 +45,8 @@ Status        : Hijau
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
-| Anggoro Adit H | Project Manager | Laporan pekan 11, daftar keputusan sponsor, koordinasi koneksi Pentaho |  |
+| Anggoro Adit H | Project Manager | Laporan pekan 11, daftar keputusan sponsor, koordinasi koneksi Pentaho | [2550400](https://github.com/TaufiqTri08/dw-kelompok-7/commit/2550400e2f1b441f44b4a5c056d759665283d292) |
 | Taufiq Tri W | Data Modeler | Strategi SCD, star schema v2 (termasuk `dim_produk` standar sponsor) | [125ad](https://github.com/TaufiqTri08/dw-kelompok-7/commit/cc37d0d](https://github.com/TaufiqTri08/dw-kelompok-7/commit/125ad349049643531da716211ded7ec782848142)) |
 | Riki Audy Bin G | ETL Developer | Mapping kolom, urutan load, daftar staging, koneksi Pentaho | [e6e0c](https://github.com/TaufiqTri08/dw-kelompok-7/commit/e6e0c3eaa740282c62e42708972795fe1029a834) |
-| Chandra Febryan Saputra | OLAP Developer | Desain cube: hierarki, measure, calculated member | |
-| Zaky | Dashboard Developer | Wireframe dashboard |  |
+| Chandra Febryan Saputra | OLAP Developer | Desain cube: hierarki, measure, calculated member | commit |
+| Muhammad Zakky Ulil Amry | Dashboard Developer | Wireframe dashboard | commit  |
