@@ -197,4 +197,3 @@ Baris -1 berisi nol dan teks "Tidak diketahui". Pesanan reseller di sumber selal
 2. **Kenapa baris -1 memakai tanggal 1900-01-01?** Kolom `tanggal` wajib terisi (NOT NULL) dan unik, jadi baris -1 butuh tanggal. 1900-01-01 berada jauh di luar rentang data (2010 sampai 2015), sehingga tidak bentrok dengan hari asli dan langsung terlihat sebagai tanggal pengganti.
 3. **Kenapa hari pertama minggu adalah Senin?** Skrip mengikuti standar ISO 8601: minggu mulai Senin, dan nomor minggu dihitung dengan `WEEK(d, 3)`. Dengan begitu `hari_dalam_minggu` Senin = 1 sampai Minggu = 7, dan akhir pekan jatuh di hari ke-6 dan ke-7. Satu aturan yang sama dipakai semua kelompok, sehingga angka antartim bisa digabung.
 
-Jika tim butuh atribut tambahan (misalnya hari libur), buat tabel terpisah yang terhubung lewat `tanggal_key`, jangan mengubah tabel standar.
