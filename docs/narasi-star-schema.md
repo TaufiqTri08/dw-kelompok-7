@@ -1,6 +1,6 @@
 # Narasi Star Schema v2: Penjualan Reseller
 
-Kelompok : X
+Kelompok : 7
 Diagram  : `docs/star-schema-v2.png` (versi yang bisa diedit: `docs/star-schema-v2.dbml`)
 Tabel    : `sql/ddl.sql`. Kamus data: `docs/kamus-data.md`
 

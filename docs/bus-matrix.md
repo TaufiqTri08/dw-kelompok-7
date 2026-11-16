@@ -1,4 +1,4 @@
-# Bus Matrix: Baris Kelompok X (Penjualan Reseller)
+# Bus Matrix: Baris Kelompok 7 (Penjualan Reseller)
 
 ● = dimensi dipakai oleh proses ini
 **C** = conformed dimension (dipakai lebih dari satu proses, strukturnya harus sama di semua tim)

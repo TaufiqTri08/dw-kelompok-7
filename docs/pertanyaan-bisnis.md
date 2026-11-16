@@ -1,6 +1,6 @@
 # Pertanyaan Bisnis: Penjualan Reseller
 
-Kelompok      : X
+Kelompok      : 7
 Proses bisnis : Penjualan Reseller
 Status        : Usulan untuk Steering Review pekan 10
 

@@ -1,6 +1,6 @@
 # Sumber Data
 
-Kelompok : X
+Kelompok : 7
 Proses bisnis : Penjualan Reseller
 
 ## 1. Data asli
@@ -72,7 +72,7 @@ Ada dua hal yang perlu diperhatikan.
 | Total penjualan reseller | `SUM(SubTotal)` = `SUM(LineTotal)` = USD 80.487.704,18 (dibulatkan ke sen) |
 | Contoh satu baris: `SalesOrderID = 43659` | `SO43659`, `PO522145787`, SubTotal 20565.6206 |
 
-Semua hasil query acuan ada di `docs/hasil-query/`.
+Semua hasil query acuan dirangkum di `docs/profil-data.md`.
 
 ## 5. Alternatif yang tidak dipakai
 

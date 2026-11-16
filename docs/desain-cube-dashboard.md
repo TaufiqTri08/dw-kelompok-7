@@ -77,7 +77,7 @@ Satu halaman, dibaca dari atas ke bawah: ringkasan, lalu satu panel per pertanya
 
 ### 2.1 Tata letak
 
-Gambar wireframe: `docs/wireframe-dashboard.png` (sumber `docs/wireframe-dashboard.html`, bisa diedit lalu dirender ulang). Sketsa teks di bawah memuat tata letak yang sama.
+Gambar wireframe: `docs/Dashboard Penjualan Reseller - Wireframe v3 (acuan Finnova).png`. Sketsa teks di bawah memuat tata letak yang sama.
 
 ```
 +---------------------------------------------------------------------------+

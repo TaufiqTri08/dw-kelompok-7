@@ -1,4 +1,4 @@
--- uji-dim-produk-scd2.sql | MySQL/MariaDB | Kelompok X | Penjualan Reseller
+-- uji-dim-produk-scd2.sql | MySQL/MariaDB | Kelompok 7 | Penjualan Reseller
 --
 -- Dijalankan di database SUMBER (adventureworks2), bukan di DW. Hanya membaca: tabel v_produk adalah
 -- TEMPORARY (hilang saat sesi ditutup), jadi isi database sumber tidak berubah.

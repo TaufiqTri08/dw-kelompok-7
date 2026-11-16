@@ -1,6 +1,6 @@
--- ddl.sql | MySQL/MariaDB (XAMPP) | Kelompok X | Penjualan Reseller | Star schema v2 (8 dimensi)
+-- ddl.sql | MySQL/MariaDB (XAMPP) | Kelompok 7 | Penjualan Reseller | Star schema v2 (8 dimensi)
 --
--- Dijalankan di database DW (misalnya dw_kelompok_x), BUKAN di database sumber adventureworks2.
+-- Dijalankan di database DW (misalnya dw_kelompok_7), BUKAN di database sumber adventureworks2.
 -- Jalankan SETELAH dim_tanggal standar v1.0 terpasang (dim_tanggal tidak dibuat dan tidak dihapus di sini).
 -- Bisa dijalankan berulang kali: urutan DROP dibalik (fakta dulu), semua memakai IF EXISTS.
 --

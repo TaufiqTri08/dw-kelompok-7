@@ -1,4 +1,4 @@
--- uji-dim-wilayah-mata-uang-metode.sql | MySQL/MariaDB | Kelompok X
+-- uji-dim-wilayah-mata-uang-metode.sql | MySQL/MariaDB | Kelompok 7
 -- Jalankan di database SUMBER (adventureworks2), bukan di database DW. Hanya membaca, tidak mengubah apa pun.
 -- Meniru hasil ETL untuk tiga dimensi yang dibangun dari tabel referensi kecil, lalu memeriksa bahwa
 -- setiap baris fakta (60.919 baris detail pesanan reseller) menemukan tepat satu key di tiap dimensi.

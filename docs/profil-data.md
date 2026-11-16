@@ -1,6 +1,6 @@
 # Profil Data Sumber: Penjualan Reseller
 
-Kelompok : X
+Kelompok : 7
 Query    : `sql/profil-data-sumber.sql` (nomor bagian di bawah sama dengan nomor di file SQL)
 Database : `adventureworks2` di MySQL/MariaDB (XAMPP), hasil import dump dosen
 

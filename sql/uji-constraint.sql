@@ -1,4 +1,4 @@
--- uji-constraint.sql | MySQL/MariaDB | Kelompok X
+-- uji-constraint.sql | MySQL/MariaDB | Kelompok 7
 -- Jalankan di database DW SETELAH ddl.sql. Jalankan SATU PERINTAH DALAM SATU WAKTU
 -- (di phpMyAdmin: blok satu INSERT, klik Kirim), lalu simpan tangkapan layar pesan errornya.
 -- Hasil yang diharapkan ada di komentar masing-masing uji.

@@ -1,9 +1,9 @@
 # Piagam Proyek Data Warehouse
 
-Kelompok      : X
+Kelompok      : 7
 Proses bisnis : Penjualan Reseller
-Sponsor       : [nama dosen]
-Tanggal       : [tanggal diajukan, pekan 10]
+Sponsor       : Dosen Pengampu Mata Kuliah Data Warehouse
+Tanggal       : 10 November 2026
 Versi         : 1
 
 ## 1. Latar belakang
@@ -70,7 +70,7 @@ Pembagian tugas dan aturan anggota untuk Steering Review pekan 11 ada di `docs/p
 | Komponen | Pilihan |
 |----------|---------|
 | Sumber | MySQL/MariaDB di XAMPP, database `adventureworks2` (hanya dibaca): AdventureWorks2017 dari Microsoft, dari dump dosen yang di-import apa adanya. Rincian di `docs/sumber-data.md` |
-| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_x` |
+| Target | MySQL/MariaDB di XAMPP, database `dw_kelompok_7` |
 | ETL | Pentaho Data Integration CE (versi sama untuk semua anggota) |
 | OLAP | Mondrian |
 | Dashboard | Web dengan chart library (usulan: Chart.js) |
@@ -103,5 +103,5 @@ Pembagian tugas dan aturan anggota untuk Steering Review pekan 11 ada di `docs/p
 
 | | Nama | Tanggal | Paraf |
 |---|---|---|---|
-| Project Sponsor | [nama dosen] | | |
+| Project Sponsor | Dosen Pengampu | | |
 | Project Manager | Anggoro Adit H | | |

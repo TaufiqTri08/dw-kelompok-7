@@ -9,7 +9,7 @@ Database: **MySQL/MariaDB di XAMPP**, untuk database sumber maupun data warehous
 ```
 dw-kelompok-7/
 ├─ docs/        piagam proyek, pertanyaan bisnis, desain, profil data, bus matrix
-├─ sql/         query profil data, query uji pertanyaan bisnis, (nanti) DDL
+├─ sql/         DDL data warehouse, query uji, query profil data
 ├─ etl/         file .ktr dan .kjb Pentaho
 ├─ olap/        schema.xml Mondrian, query MDX
 ├─ dashboard/   kode web dashboard
@@ -21,17 +21,30 @@ dw-kelompok-7/
 | File | Isi |
 |------|-----|
 | `docs/sumber-data.md` | Asal data (AdventureWorks2017 dari Microsoft), file dump dari dosen, cara import ke XAMPP, dan pemeriksaannya |
-| `docs/piagam-proyek.md` | Piagam proyek: latar belakang, 7 pertanyaan bisnis, ruang lingkup, tim, risiko, kriteria sukses |
+| `docs/piagam-proyek.md` | Piagam proyek: latar belakang, 5 pertanyaan bisnis, ruang lingkup, tim, risiko, kriteria sukses |
 | `docs/pertanyaan-bisnis.md` | Pertanyaan bisnis beserta fakta, dimensi, dan hasil uji awal |
 | `docs/desain-star-schema-v1.md` | Empat langkah desain dimensional, grain, kamus data awal, aturan ETL awal |
 | `docs/star-schema-v1.png` | Diagram star schema v1 (`.svg` dan `.dbml` untuk diedit di dbdiagram.io) |
 | `docs/bus-matrix.md` | Baris bus matrix tim dan dimensi conformed |
 | `docs/profil-data.md` | Hasil profil data sumber dan dampaknya ke desain |
-| `docs/hasil-query/` | Hasil acuan kedua file SQL, untuk dicocokkan dengan hasil di laptop |
+| `docs/catatan-sql.md` | Query yang sempat memberi hasil salah dan perbaikannya |
+| `docs/bukti/` | Tangkapan layar bukti tiap anggota (lihat `docs/bukti/README.md`) |
 | `sql/cek-kesiapan.sql` | Satu query untuk memastikan database sumber di laptop setiap anggota sudah benar |
 | `sql/profil-data-sumber.sql` | Query profil data sumber (15 bagian) |
 | `sql/uji-pertanyaan-bisnis.sql` | Query yang menjawab tiap pertanyaan bisnis langsung dari sumber (pembanding rekonsiliasi) |
 | `laporan/pekan-10.md` | Laporan progres untuk Steering Review pekan 10 |
+
+## Isi pekan 10 (dilaporkan pekan 11)
+
+| File | Isi |
+|------|-----|
+| `docs/star-schema-v2.png` | Star schema v2 setelah `dim_tanggal` dan `dim_produk` mengikuti standar sponsor (`.svg` dan `.dbml` untuk diedit) |
+| `docs/mapping.md` | Source-to-target mapping tiap kolom, strategi SCD, urutan load, daftar 22 tabel staging, rekonsiliasi |
+| `docs/desain-cube-dashboard.md` | Dimensi, hierarki, measure, calculated member, dan rincian wireframe dashboard |
+| `docs/Dashboard Penjualan Reseller - Wireframe v3 (acuan Finnova).png` | Wireframe dashboard dengan nomor pertanyaan P1–P5 |
+| `etl/Test Koneksi Pentaho.ktr` | Transformasi uji koneksi ke `adventureworks2` (Table input + `SET time_zone`) |
+| `docs/pembagian-tugas-pekan-11.md` | Pembagian tugas dan definition of done pekan 11 |
+| `laporan/pekan-11.md` | Laporan progres untuk Steering Review pekan 11 |
 
 ## Menyiapkan database sumber
 
@@ -68,4 +81,4 @@ Sumber data adalah dump MariaDB `adventureworks2` dari dosen (AdventureWorks2017
   ```
 
 Hasil bagian 1 dan 15 dari `profil-data-sumber.sql` harus sama di laptop semua anggota:
-3.806 pesanan reseller, 60.919 baris detail, total nilai USD 80.487.704,18. Hasil lengkapnya ada di `docs/hasil-query/`.
+3.806 pesanan reseller, 60.919 baris detail, total nilai USD 80.487.704,18. Hasil lengkapnya ada di `docs/profil-data.md`.
