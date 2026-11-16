@@ -2,7 +2,7 @@
 
 Kelompok      : 7
 Proses bisnis : Penjualan Reseller
-Sponsor       : Dosen Pengampu Mata Kuliah Data Warehouse
+Sponsor       : Mohamad Irwan Afandi, ST, M.Sc.
 Tanggal       : 10 November 2026
 Versi         : 1
 
@@ -103,5 +103,5 @@ Pembagian tugas dan aturan anggota untuk Steering Review pekan 11 ada di `docs/p
 
 | | Nama | Tanggal | Paraf |
 |---|---|---|---|
-| Project Sponsor | Dosen Pengampu | | |
+| Project Sponsor | Mohamad Irwan Afandi, ST, M.Sc. | | |
 | Project Manager | Anggoro Adit H | | |
