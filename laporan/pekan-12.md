@@ -27,11 +27,7 @@ Status        : Hijau
 Koordinasi antar anggota tim berjalan walaupun kesulitan untuk meyelaraskan ide dan keep up dalam pengerjaan.
 
 ## 4. Keputusan yang butuh persetujuan sponsor
-1. **`dim_tanggal` hanya memakai skrip standar v1.0 (12 kolom).** Tidak ada atribut tambahan. Jika dibutuhkan (misalnya hari libur), dibuat tabel terpisah yang terhubung lewat `tanggal_key`.
-2. **Nilai pengganti -1 untuk atribut angka yang kosong** (`qty_maks`, `tahun_buka`, `jumlah_karyawan`) supaya kolom tetap `NOT NULL`.
-3. **Ongkos kirim dan pajak tetap di luar lingkup v1** (usulan dari laporan pekan 10 belum berubah).
-4. **Ukuran uang** `DECIMAL(14,4)` di fakta dan `DECIMAL(12,4)` di dimensi, sesuai ketelitian 4 desimal di sumber.
-5. **Nama kolom `tarif_per_lb` pada `dim_metode_kirim`** . Di sumber `ShipRate` berarti tarif per pound, jadi nama `tarif_per_kg` yang dipakai di v1 dan di laporan pekan 11 
+**Nama kolom `tarif_per_lb` pada `dim_metode_kirim`** . Di sumber `ShipRate` berarti tarif per pound, jadi nama `tarif_per_kg` yang dipakai di v1 dan di laporan pekan 11 
 
 
 
@@ -50,7 +46,7 @@ Koordinasi antar anggota tim berjalan walaupun kesulitan untuk meyelaraskan ide 
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
 | Anggoro Adit H | Project Manager | Kamus data, laporan pekan 12 | [6583579](https://github.com/TaufiqTri08/dw-kelompok-7/commit/6583579f9a48174800be87950049d81ea3fa7b1f) |
-| Taufiq Tri W | Data Modeler | Pasang `dim_tanggal`, `ddl.sql`, bukti dua kali jalan | Commit |
-| Riki Audy Bin G | ETL Developer | Daftar staging, cek tipe data DDL terhadap sumber | Commit |
+| Taufiq Tri W | Data Modeler | Pasang `dim_tanggal`, `ddl.sql`, bukti dua kali jalan | [5395ffa](https://github.com/TaufiqTri08/dw-kelompok-7/commit/5395ffa02924b075982bec7ce060f3dde8d6d2a3) |
+| Riki Audy Bin G | ETL Developer | Daftar staging, cek tipe data DDL terhadap sumber | [543a1b1](https://github.com/TaufiqTri08/dw-kelompok-7/commit/543a1b1b25e04cae3a342570c195a4137a59030c) |
 | Chandra Febryan Saputra | OLAP Developer | ERD dari database dan perbandingan dengan v2 | Commit |
 | Muhammad Zakky Ulil Amry | Dashboard Developer | Uji constraint, tangkapan layar error uji 1 sampai 3 | Commit |
