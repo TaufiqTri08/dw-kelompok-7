@@ -13,7 +13,7 @@ Status        : Hijau
 | 3. Uji constraint: jalankan tiga uji di tab Uji Constraint. Simpan tangkapan layar pesan error. | Selesai | commit |
 | 4. Kamus data di `docs/kamus-data.md`: semua tabel DW, termasuk penjelasan `dim_tanggal` dengan bahasa sendiri dan versi skrip yang dipakai. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/kamus-data.md |
 | 5. ERD dari database: buat dengan reverse engineering dari database yang sudah jadi (DBeaver), bandingkan dengan star schema v2. Harus sama. | Selesai | commit |
-| 6. Daftar tabel staging, ditambahkan di dokumen mapping. | Selesai | https://github.com/TaufiqTri08/dw-kelompok 7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/mapping.md |
+| 6. Daftar tabel staging, ditambahkan di dokumen mapping. | Selesai | https://github.com/TaufiqTri08/dw-kelompok7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/mapping.md |
 | 7. Laporan pekan 12 memakai templat laporan progres. Sertakan permintaan perubahan jika ada. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/laporan/pekan-12.md |
 
 
