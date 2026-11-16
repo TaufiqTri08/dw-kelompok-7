@@ -8,13 +8,13 @@ Status        : Hijau
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
 |------------------|--------|-----------------------------------------------|
-| 1. Pasang `dim_tanggal` standar versi 1.0. Simpan hasil query pemeriksaan. | Selesai | `docs/bukti/dim-tanggal-pemeriksaan.png` (2.192 baris, 2010-01-01 sampai 2015-12-31, 20130315 hari Jumat). Skrip: `sql/dim_tanggal_mysql.sql` (untuk MariaDB: `sql/dim_tanggal_alternatif.sql`) |
-| 2. Tulis `sql/ddl.sql`: semua dimensi dan fakta tim, termasuk baris -1, foreign key, dan index. Harus bisa dijalankan dua kali berturut-turut tanpa error. | Selesai | `sql/ddl.sql` (7 dimensi + 1 fakta, baris -1, 10 foreign key, 10 index, 5 CHECK; `dim_tanggal` dipasang dari skrip standar sponsor, jadi DW berisi 9 tabel). Bukti dua kali jalan: `docs/bukti/ddl-jalan-dua-kali.png` |
-| 3. Uji constraint: jalankan tiga uji di tab Uji Constraint. Simpan tangkapan layar pesan error. | Selesai | `docs/bukti/uji-1.png`, `uji-2.png`, `uji-3.png` dari `sql/uji-constraint.sql` (uji 4 sampai 12 tambahan tim) |
-| 4. Kamus data di `docs/kamus-data.md`: semua tabel DW, termasuk penjelasan `dim_tanggal` dengan bahasa sendiri dan versi skrip yang dipakai. | Selesai | `docs/kamus-data.md` (9 tabel, 12 kolom `dim_tanggal`, skrip `dim_tanggal_mysql.sql` versi 1.0, dan tiga jawaban catatan dari halaman tugas) |
-| 5. ERD dari database: buat dengan reverse engineering dari database yang sudah jadi (DBeaver), bandingkan dengan star schema v2. Harus sama. | Selesai | `docs/bukti/erd-database.png`, dibandingkan dengan `docs/star-schema-v2.png` (8 dimensi, 10 garis relasi) |
-| 6. Daftar tabel staging, ditambahkan di dokumen mapping. | Selesai | `docs/mapping.md` bagian 4 (22 tabel staging) |
-| 7. Laporan pekan 12 memakai templat laporan progres. Sertakan permintaan perubahan jika ada. | Selesai | `laporan/pekan-12.md`. Permintaan perubahan: `docs/perubahan/CR-01.md` (menunggu keputusan sponsor) |
+| 1. Pasang `dim_tanggal` standar versi 1.0. Simpan hasil query pemeriksaan. | Selesai | [sql/dim_tanggal_mysql.sql (https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/sql/dim_tanggal_mysql.sql) |
+| 2. Tulis `sql/ddl.sql`: semua dimensi dan fakta tim, termasuk baris -1, foreign key, dan index. Harus bisa dijalankan dua kali berturut-turut tanpa error. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/sql/ddl.sql |
+| 3. Uji constraint: jalankan tiga uji di tab Uji Constraint. Simpan tangkapan layar pesan error. | Selesai | commit |
+| 4. Kamus data di `docs/kamus-data.md`: semua tabel DW, termasuk penjelasan `dim_tanggal` dengan bahasa sendiri dan versi skrip yang dipakai. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/kamus-data.md |
+| 5. ERD dari database: buat dengan reverse engineering dari database yang sudah jadi (DBeaver), bandingkan dengan star schema v2. Harus sama. | Selesai | commit |
+| 6. Daftar tabel staging, ditambahkan di dokumen mapping. | Selesai | https://github.com/TaufiqTri08/dw-kelompok 7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/mapping.md |
+| 7. Laporan pekan 12 memakai templat laporan progres. Sertakan permintaan perubahan jika ada. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/laporan/pekan-12.md |
 
 
 
@@ -49,7 +49,7 @@ Koordinasi antar anggota tim berjalan walaupun kesulitan untuk meyelaraskan ide 
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
-| Anggoro Adit H | Project Manager | Kamus data, laporan pekan 12 | Commit |
+| Anggoro Adit H | Project Manager | Kamus data, laporan pekan 12 | [Commit] |
 | Taufiq Tri W | Data Modeler | Pasang `dim_tanggal`, `ddl.sql`, bukti dua kali jalan | Commit |
 | Riki Audy Bin G | ETL Developer | Daftar staging, cek tipe data DDL terhadap sumber | Commit |
 | Chandra Febryan Saputra | OLAP Developer | ERD dari database dan perbandingan dengan v2 | Commit |
