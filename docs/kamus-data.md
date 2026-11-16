@@ -193,8 +193,6 @@ Hierarki untuk cube: **Tahun → Kuartal → Bulan → Tanggal** (kolom `tahun`,
 
 Baris -1 berisi nol dan teks "Tidak diketahui". Pesanan reseller di sumber selalu punya ketiga tanggal, sehingga tidak ada fakta yang memakai baris -1 untuk tanggal.
 
-Tiga pertanyaan dari halaman tugas, dijawab dengan bahasa tim (**tim membaca ulang dan mengubah jawaban ini dengan kata-kata sendiri sebelum dikumpulkan**):
-
 1. **Kenapa `tanggal_key` berformat YYYYMMDD dan bukan angka urut?** Angka YYYYMMDD bisa dibaca manusia tanpa membuka dimensi (20130315 pasti 15 Maret 2013), urutannya sama dengan urutan kalender, dan ETL bisa menghitungnya langsung dari tanggal sumber (`DATE_FORMAT(OrderDate, '%Y%m%d')`) tanpa mencari ke tabel. Angka urut tidak bermakna sehingga salah isi sulit ketahuan.
 2. **Kenapa baris -1 memakai tanggal 1900-01-01?** Kolom `tanggal` wajib terisi (NOT NULL) dan unik, jadi baris -1 butuh tanggal. 1900-01-01 berada jauh di luar rentang data (2010 sampai 2015), sehingga tidak bentrok dengan hari asli dan langsung terlihat sebagai tanggal pengganti.
 3. **Kenapa hari pertama minggu adalah Senin?** Skrip mengikuti standar ISO 8601: minggu mulai Senin, dan nomor minggu dihitung dengan `WEEK(d, 3)`. Dengan begitu `hari_dalam_minggu` Senin = 1 sampai Minggu = 7, dan akhir pekan jatuh di hari ke-6 dan ke-7. Satu aturan yang sama dipakai semua kelompok, sehingga angka antartim bisa digabung.
