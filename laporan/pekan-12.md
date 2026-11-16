@@ -8,7 +8,7 @@ Status        : Hijau
 ## 1. Target dan capaian
 | Target pekan ini | Status | Bukti (tautan file, commit, tangkapan layar) |
 |------------------|--------|-----------------------------------------------|
-| 1. Pasang `dim_tanggal` standar versi 1.0. Simpan hasil query pemeriksaan. | Selesai | [sql/dim_tanggal_mysql.sql (https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/sql/dim_tanggal_mysql.sql) |
+| 1. Pasang `dim_tanggal` standar versi 1.0. Simpan hasil query pemeriksaan. | Selesai |(https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/sql/dim_tanggal_mysql.sql) |
 | 2. Tulis `sql/ddl.sql`: semua dimensi dan fakta tim, termasuk baris -1, foreign key, dan index. Harus bisa dijalankan dua kali berturut-turut tanpa error. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/sql/ddl.sql |
 | 3. Uji constraint: jalankan tiga uji di tab Uji Constraint. Simpan tangkapan layar pesan error. | Selesai | commit |
 | 4. Kamus data di `docs/kamus-data.md`: semua tabel DW, termasuk penjelasan `dim_tanggal` dengan bahasa sendiri dan versi skrip yang dipakai. | Selesai | https://github.com/TaufiqTri08/dw-kelompok-7/blob/5395ffa02924b075982bec7ce060f3dde8d6d2a3/docs/kamus-data.md |
@@ -49,7 +49,7 @@ Koordinasi antar anggota tim berjalan walaupun kesulitan untuk meyelaraskan ide 
 ## 6. Kontribusi anggota
 | Nama | Peran | Yang dikerjakan pekan ini | Bukti commit |
 |------|-------|---------------------------|--------------|
-| Anggoro Adit H | Project Manager | Kamus data, laporan pekan 12 | [Commit] |
+| Anggoro Adit H | Project Manager | Kamus data, laporan pekan 12 | [6583579](https://github.com/TaufiqTri08/dw-kelompok-7/commit/6583579f9a48174800be87950049d81ea3fa7b1f) |
 | Taufiq Tri W | Data Modeler | Pasang `dim_tanggal`, `ddl.sql`, bukti dua kali jalan | Commit |
 | Riki Audy Bin G | ETL Developer | Daftar staging, cek tipe data DDL terhadap sumber | Commit |
 | Chandra Febryan Saputra | OLAP Developer | ERD dari database dan perbandingan dengan v2 | Commit |
