@@ -64,7 +64,6 @@ Struktur kolom mengikuti standar dari sponsor (pertemuan 10) dan tidak ditambah 
 | `harga_jual` | DECIMAL(12,4) | 2 | Harga katalog pada periode versi ini, USD | 34,9900 | Berbeda dengan `harga_satuan` di fakta (harga transaksi reseller) |
 | `berlaku_mulai` | DATE | - | Tanggal pertama versi ini berlaku | 2013-05-30 | |
 | `berlaku_sampai` | DATE | - | Tanggal terakhir versi ini berlaku | 9999-12-31 | 9999-12-31 = versi yang berlaku sekarang. `CHECK berlaku_mulai <= berlaku_sampai` |
-| `is_current` | BOOLEAN | - | 1 jika versi ini berlaku sekarang | 1 | Sama dengan `berlaku_sampai = 9999-12-31` |
 
 Hierarki: Kategori → Subkategori → Produk. Hierarki kedua: Warna → Produk.
 
