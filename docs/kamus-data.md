@@ -45,7 +45,7 @@ Index: satu index untuk setiap foreign key (10 index, nama `ix_fpr_...`). Kolom 
 
 ---
 
-## `dim_produk` (struktur standar sponsor, SCD tipe 2 untuk biaya dan harga)
+## `dim_produk`  SCD tipe 2 untuk biaya dan harga
 
 **Grain:** satu produk dalam satu periode biaya/harga (satu *versi* produk). **Perkiraan baris:** 606 versi untuk 504 produk + baris -1. **Natural key:** `produk_id`, unik bersama `berlaku_mulai`. 77 produk punya lebih dari satu versi.
 
@@ -166,7 +166,7 @@ Pesanan reseller hanya memakai lima kode: USD (2.629 pesanan), CAD (692), GBP (1
 
 Semua 3.806 pesanan reseller memakai CARGO TRANSPORT 5. Empat metode lain (XRQ - TRUCK GROUND, ZY - EXPRESS, OVERSEAS - DELUXE, OVERNIGHT J-FAST) ada di dimensi tetapi tidak dipakai proses ini.
 
-## `dim_tanggal` (standar sponsor v1.0, SCD tipe 0, tidak diubah)
+## `dim_tanggal` 
 
 **Grain:** satu hari. **Baris:** 2.192 (2.191 hari dari 2010-01-01 sampai 2015-12-31, ditambah baris -1). **Natural key unik:** `tanggal` (UNIQUE).
 
