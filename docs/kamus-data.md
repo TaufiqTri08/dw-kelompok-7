@@ -1,8 +1,7 @@
 # Kamus Data Data Warehouse Penjualan Reseller
 
 Kelompok : 7
-Database : `dw_kelompok_7` (MySQL/MariaDB XAMPP, mesin InnoDB)
-Skrip    : `sql/ddl.sql` (star schema v2, 8 dimensi), `sql/dim_tanggal_mysql.sql` (skrip standar sponsor, versi 1.0, dipasang sebelum `ddl.sql`)
+Database : `dw_kelompok_7` 
 Rincian sumber tiap kolom: `docs/mapping.md`
 
 Aturan yang berlaku di semua tabel:
